@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { loginUser } from '../api/api';
+import { NavLink } from "react-router-dom";
+import PasswordInput from "./PasswordIntup";
 
 
 const Login: React.FC = () => {
@@ -44,26 +47,20 @@ const Login: React.FC = () => {
 		<div className="container-login">
 			<h2>Логин</h2>
 			{error && <p style={{ color: 'red' }}>{error}</p>}
-			<form onSubmit={handleLogin}>
+			<form method="post" onSubmit={handleLogin}>
 				<div>
 					<label htmlFor="username">Логин:</label>
 					<input
 						type="text"
 						id='username'
 						value={username}
+						placeholder='Логин'
 						onChange={(e) => setUsername(e.target.value)}
 						required
 					/>
 				</div>
-				<div>
-					<label htmlFor="password">Пароль:</label>
-						<input
-							type="password"
-							id='password'
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-						/>
+				<div className="form-group">
+					<PasswordInput password={password} setPassword={setPassword} confirm={true}/>
 				</div>
 				<div>
 					<label>
@@ -71,14 +68,17 @@ const Login: React.FC = () => {
 							type="checkbox"
 							checked={memory}
 							onChange={(e) => setMemory(e.target.checked)}
-							required
 						/>
 						Запомнить меня
 					</label>
 				</div>
 				<button type='submit'>Войти</button>
 			</form>
-		</div>
+			<div className="footer">
+                <p>Первый раз у нас? <NavLink to="/api/register">Регистрация</NavLink></p>
+				<p><NavLink to="/">Главная страница</NavLink></p>
+            </div>
+            </div>
 	);
 };
 

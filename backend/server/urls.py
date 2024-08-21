@@ -1,7 +1,8 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework import routers
 from .views import UserViewSet, FileViewSet, user_login, user_logout
+from django.views.generic import TemplateView
 
 
 router = routers.DefaultRouter()
