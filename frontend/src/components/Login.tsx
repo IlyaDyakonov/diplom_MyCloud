@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-import { loginUser } from '../api/api';
+import { useLoginActionMutation  } from '../api/api';
 import { NavLink } from "react-router-dom";
 import PasswordInput from "./PasswordIntup";
 
@@ -9,7 +9,7 @@ const Login: React.FC = () => {
 	const [ username, setUsername ] = useState<string>("");
 	const [ password, setPassword ] = useState<string>("");
 	const [ memory, setMemory ] = useState<boolean>(false);
-	const [ error, setError ] = useState<string | null>(null);
+	const [loginAction, { isLoading, error }] = useLoginActionMutation();
 
 	// загрузка из локального хранилища
 	useEffect(() => {
@@ -26,19 +26,10 @@ const Login: React.FC = () => {
 	const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		try {
-			const data = await loginUser(username, password);
-			console.log(`Вы залогинены: ${data}`);
-
-			if (memory) {
-				localStorage.setItem('username', username);
-				localStorage.setItem('password', password);
-			} else {
-				localStorage.removeItem('username');
-				localStorage.removeItem('password');
-			}
-			setError(null);
+			const result = await loginAction({ username, password }).unwrap(); // Вызов API
+            console.log('Login successful:', result);
 		} catch(error: any) {
-			setError(error.message || 'Ошибка при логине')
+			console.error('Login failed:', error);
 		}
 
 	};
@@ -72,10 +63,10 @@ const Login: React.FC = () => {
 						Запомнить меня
 					</label>
 				</div>
-				<button type='submit'>Войти</button>
+				<button type='submit' disabled={isLoading}>Войти</button>
 			</form>
 			<div className="footer">
-                <p>Первый раз у нас? <NavLink to="/api/register">Регистрация</NavLink></p>
+                <p>Первый раз у нас? <NavLink to="/register">Регистрация</NavLink></p>
 				<p><NavLink to="/">Главная страница</NavLink></p>
             </div>
             </div>

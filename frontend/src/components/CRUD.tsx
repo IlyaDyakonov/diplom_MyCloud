@@ -22,7 +22,7 @@ function Menu() {
     const currentPath = location.pathname;
 
     // Проверка, если мы находимся на странице логина или регистрации
-    const isLoginOrRegisterPage = currentPath === "/api/login" || currentPath === "/api/register";
+    const isLoginOrRegisterPage = currentPath === "/login" || currentPath === "/register";
     // Рендеринг навигационного меню только если не находимся на страницах логина или регистрации
     if (isLoginOrRegisterPage) {
         return null; // Меню не будет отображаться
@@ -30,8 +30,8 @@ function Menu() {
     // Рендеринг навигационного меню
     return (
         <nav className="crud-menu">
-            <NavLink to="/api/login" className={isExactActive('/api/login') ? isActive : isNoActive}>Вход</NavLink>
-            <NavLink to="/api/register" className={isExactActive('/api/register') ? isActive : isNoActive}>Регистрация</NavLink>
+            <NavLink to="/login" className={isExactActive('/login') ? isActive : isNoActive}>Вход</NavLink>
+            <NavLink to="/register" className={isExactActive('/register') ? isActive : isNoActive}>Регистрация</NavLink>
         </nav>
     )
 }
@@ -46,8 +46,8 @@ function CRUD() {
             <Menu />
             <div className="page-crud">
                 <Routes>
-                    <Route path="/api/login" element={<Login />} />
-                    <Route path="/api/register" element={<UseReg />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<UseReg />} />
                 </Routes>
             </div>
         </div>

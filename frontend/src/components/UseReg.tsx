@@ -84,7 +84,7 @@ const UseReg: React.FC = () => {
 				<button type='submit'>Зарегестрироваться</button>
 			</form>
 			<div className="footer">
-                <p>Уже зарегестрированы? <NavLink to="/api/login">Вход</NavLink></p>
+                <p>Уже зарегестрированы? <NavLink to="/login">Вход</NavLink></p>
 				<p><NavLink to="/">Главная страница</NavLink></p>
             </div>
 		</div>

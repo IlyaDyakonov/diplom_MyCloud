@@ -1,6 +1,51 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from 'axios';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query';
+import { LoginCredentials, LoginResponse, RegisterResponse, RegisterUser } from '../models';
 
+
+// Определяем базовый запрос для API, который добавляет CSRF-токен в заголовки
+const baseQuery = fetchBaseQuery({
+    baseUrl: '/api', // Указываем базовый URL для API запросов
+    prepareHeaders: (headers) => {
+        const csrfToken = getCookie('csrftoken');
+        if (csrfToken) {
+            headers.set('X-CSRFToken', csrfToken); // Добавляем CSRF-токен в заголовки
+        }
+        return headers;
+    },
+    credentials: 'include', // Включаем куки в запросы
+});
+
+
+// RTK Query API для пользователя
+export const userApi = createApi({
+    reducerPath: 'userApi',
+    baseQuery,
+    endpoints: (builder) => ({
+        // логин пользователя
+        loginAction: builder.mutation<LoginResponse, LoginCredentials>({
+            query: (credentials) => ({
+                url: '/login/',
+                method: 'POST',
+                body: credentials, // Данные для авторизации (логин/пароль)
+            })
+        }),
+        // логаут пользователя
+        logoutAction: builder.mutation<void, void>({
+            query: () => ({
+                url: '/logout/',
+                method: 'POST', // Для логаута используется POST запрос
+            }),
+        }),
+        // регистрация пользователя
+        createUser: builder.mutation<RegisterResponse, RegisterUser>({
+            query: (userData) => ({
+                url: '/users/',
+                method: 'POST',
+                body: userData, // Данные для регистрации (логин, email, пароль)
+            }),
+        }),
+    })
+})
 
 const getCookie = (name: string): string | null => {
     let cookieValue = null;
@@ -17,52 +62,8 @@ const getCookie = (name: string): string | null => {
     return cookieValue;
 };
 
-
-// Функция для получения CSRF токена
-const getCSRFToken = (): string | null => {
-    return getCookie('csrftoken');  // Используем вашу функцию для получения CSRF токена
-};
-
-// Универсальная функция для обработки запросов на сервер
-const apiRequest = async (method: 'GET' | 'POST' | 'PUT' | 'DELETE', url: string, data?: any, headers?: any) => {
-    try {
-        const csrfToken = getCSRFToken();
-        const config = {
-            method,
-            url,
-            data,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken || '',
-                ...headers,
-            },
-            withCredentials: true,  // для того чтобы отправлять куки с запросом
-        };
-
-        const response = await axios(config);
-        return response.data;
-    } catch (error: any) {
-        throw new Error(error.response?.data?.message || 'Произошла ошибка при запросе');
-    }
-};
-
-// Пример запроса на логин
-export const loginUser = async (username: string, password: string) => {
-    const data = { username, password };
-    return await apiRequest('POST', '/api/login/', data);
-};
-
-// Пример запроса на регистрацию
-export const createUser = async (userData: { username: string; email: string; password: string }) => {
-    return await apiRequest('POST', '/api/register/', userData);
-};
-
-// Добавляем новые запросы в будущем
-// export const fetchUserProfile = async () => {
-//     return await apiRequest('GET', '/api/profile/');
-// };
-
-// Пример запроса на обновление профиля
-// export const updateUserProfile = async (profileData: any) => {
-//     return await apiRequest('PUT', '/api/profile/update/', profileData);
-// };
+export const {
+    useLoginActionMutation,
+    useLogoutActionMutation,
+    useCreateUserMutation,
+} = userApi;
