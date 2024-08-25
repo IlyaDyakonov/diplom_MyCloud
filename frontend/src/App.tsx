@@ -1,6 +1,7 @@
 import './App.css';
 import CRUD from './components/CRUD';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Footer from './components/Footer';
 
 
 function App() {
@@ -9,15 +10,12 @@ function App() {
       <h1>Облачное хранилище «MyCloud!»</h1>
       <header className='header'>
         <nav className="nav-components">
-          {/* <NavLink to={"/api/login"} className="nav-link">Вход</NavLink>
-          <NavLink to={"/api/register"} className="nav-link">Регистрация</NavLink> */}
           <Routes>
             <Route path="/*" element={<CRUD />} />
           </Routes>
         </nav>
       </header>
-
-
+      <Footer />
     </Router>
   )
 }

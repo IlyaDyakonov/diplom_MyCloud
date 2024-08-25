@@ -30,12 +30,21 @@ function Menu() {
     // Рендеринг навигационного меню
     return (
         <nav className="crud-menu">
-            <NavLink to="/login" className={isExactActive('/login') ? isActive : isNoActive}>Вход</NavLink>
-            <NavLink to="/register" className={isExactActive('/register') ? isActive : isNoActive}>Регистрация</NavLink>
+            {/* {activeState === 'login' ? (
+                <div className="login-name">
+                    Вы вошли как {currentUser?.username}
+                </div>
+            ) : ( */}
+            <>
+                <div className="menu-login">
+                    <NavLink to="/login" className={isExactActive('/login') ? isActive : isNoActive}>Вход</NavLink>
+                    <NavLink to="/register" className={isExactActive('/register') ? isActive : isNoActive}>Регистрация</NavLink>
+                </div>
+            </>
+            {/* </> )} */}
         </nav>
     )
 }
-
 
 /**
  * главный компомент с навигацией по сайту

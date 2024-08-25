@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { UserProps } from '../models';
+import { UserProps, UserType } from '../models';
 import { userApi } from '../api/api';
 
 
@@ -19,14 +19,22 @@ const usersSlice = createSlice({
         setLoginUser(state, action) {  // Сеттер для установки залогиненного пользователя
             state.loginUser = action.payload;
 			state.currentUser = action.payload;
+            state.activeState = 'login';
         },
+        setCurrentUser(state, action) {
+			state.currentUser = action.payload;
+		},
         clearUser(state) {  // Очистка данных пользователя при логауте
 			state.loginUser = null;
 			state.currentUser = null;
+            state.activeState = 'logout';
 		},
         setActiveState(state, action) {     // Установка активного состояния (login/logout)
 			state.activeState = action.payload;
 		},
+        setView(state, action) {
+            state.view = action.payload;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -37,7 +45,8 @@ const usersSlice = createSlice({
             .addMatcher(userApi.endpoints.loginAction.matchFulfilled, (state, action) => {
                 console.log("loginUserFulfilled", state, action.payload.user);
                 state.isLoading = false;
-                state.currentUser = action.payload.user;  // Успешный логин, сохраняем текущего пользователя
+                state.currentUser = action.payload.user as UserType;  // Успешный логин, сохраняем текущего пользователя
+                state.activeState = 'login';
                 state.error = "";              // Сбрасываем ошибки
             })
             .addMatcher(userApi.endpoints.loginAction.matchRejected, (state, action) => {
@@ -53,6 +62,7 @@ const usersSlice = createSlice({
                 console.log("logoutUserFulfilled", state);
                 state.isLoading = false;
                 state.currentUser = null;     // Успешный логаут, очищаем данные текущего пользователя
+                state.activeState = 'logout';
                 state.error = "";              // Сбрасываем ошибки
             })
             .addMatcher(userApi.endpoints.logoutAction.matchRejected, (state, action) => {

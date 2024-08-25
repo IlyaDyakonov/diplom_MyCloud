@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import PasswordInput from "./PasswordIntup";
-import { createUser } from "../api/api";
+import { useCreateUserMutation } from "../api/api";
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../store";
+import { setActiveState } from "../slices/usersSlice.ts";
 
 
 const UseReg: React.FC = () => {
+	const dispatch = useDispatch<AppDispatch>();
+	const [createUser] = useCreateUserMutation();
+	const navigate = useNavigate();
 	const [ username, setUsername ] = useState<string>("");
 	const [ email, setEmail ] = useState<string>('');
 	const [ password, setPassword ] = useState<string>("");
@@ -37,7 +43,8 @@ const UseReg: React.FC = () => {
 
 			} else {
 				console.log('User created successfully', result.data);
-				dispatch(setError('login'));
+				dispatch(setActiveState('login'));
+				navigate('/login');
 			}
 		} catch (err) {
 			console.error('Failed to create user:', err);
@@ -47,7 +54,6 @@ const UseReg: React.FC = () => {
 	return (
 		<div className="container-register">
 			<h2>Регистрация</h2>
-			{error && <p style={{ color: 'red' }}>{error}</p>}
 			<form method="post" onSubmit={handleRegistration}>
 				<div>
 					<label htmlFor="username">Ваш логин:</label>
@@ -82,10 +88,10 @@ const UseReg: React.FC = () => {
 					<PasswordInput password={confirmPassword} setPassword={setConfirmPassword} confirm={false}/>
 				</div>
 				<button type='submit'>Зарегестрироваться</button>
+				{error && <p style={{ color: 'red' }}>{error}</p>}
 			</form>
 			<div className="footer">
                 <p>Уже зарегестрированы? <NavLink to="/login">Вход</NavLink></p>
-				<p><NavLink to="/">Главная страница</NavLink></p>
             </div>
 		</div>
 	);

@@ -11,13 +11,11 @@ from pathlib import Path
 allowed_extensions = ['tiff', 'jpg', 'png', 'jpeg', 'pdf', 'doc', 'docx', 'gif']
 
 class User(AbstractUser):
-    username = models.CharField(verbose_name='Логин', max_length=30, unique=True)
-    email = models.EmailField(verbose_name='email адрес', max_length=100, unique=True)
-    first_name = models.CharField(verbose_name='Имя', max_length=30, blank=False)
-    last_name = models.CharField(verbose_name='Фамилия', max_length=30, blank=False)
+    username = models.CharField(verbose_name='Логин', max_length=30, unique=True) # логин пользователя
+    email = models.EmailField(verbose_name='email адрес', max_length=100, unique=True) # электронная почта
     is_active = models.BooleanField(verbose_name='active', default=False) # активен ли пользователь
-    is_superuser = models.BooleanField(default=False) # редактирование
-    folder_name = models.CharField(max_length=100, verbose_name="Папка пользователя", blank=True)
+    is_superuser = models.BooleanField(default=False) # возможность редактирования
+    folder_name = models.CharField(max_length=100, verbose_name="Папка пользователя", blank=True) # пусть к папке с файлами пользователя
 
     def save(self, *args, **kwargs):
         if not self.folder_name:

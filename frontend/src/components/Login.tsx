@@ -1,15 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useLoginActionMutation  } from '../api/api';
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import PasswordInput from "./PasswordIntup";
+import { useDispatch } from "react-redux";
+import getError from "../hooks/GetError";
+import {setActiveState, setLoginUser} from "../slices/usersSlice";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { SerializedError } from "@reduxjs/toolkit";
 
 
 const Login: React.FC = () => {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const [ username, setUsername ] = useState<string>("");
 	const [ password, setPassword ] = useState<string>("");
 	const [ memory, setMemory ] = useState<boolean>(false);
 	const [loginAction, { isLoading, error }] = useLoginActionMutation();
+	const [errorMessage, setErrorMessage] = useState<string>('');
 
 	// загрузка из локального хранилища
 	useEffect(() => {
@@ -26,18 +34,36 @@ const Login: React.FC = () => {
 	const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		try {
-			const result = await loginAction({ username, password }).unwrap(); // Вызов API
-            console.log('Login successful:', result);
-		} catch(error: any) {
-			console.error('Login failed:', error);
-		}
+			if (!isLoading) {
+				if (memory) {
+					localStorage.setItem('username', username);
+					localStorage.setItem('password', password);
+				} else {
+					localStorage.removeItem('username');
+					localStorage.removeItem('password');
+				}
 
+				const response = await loginAction({username, password});
+				if (response && response.error && 'error' in response) {
+					setErrorMessage(getError(response.error));
+				} else {
+					console.log('Успешный вход:', response.data);
+					sessionStorage.setItem('loginUser', JSON.stringify(response.data.user));
+					dispatch(setLoginUser(response.data.user));
+					dispatch(setActiveState('login'));
+					navigate('/');
+				}
+			}
+		} catch (error) {
+			console.error('Ошибка входа:', error);
+			const errorMessage = getError(error as FetchBaseQueryError | SerializedError);
+			setErrorMessage(errorMessage);
+		}
 	};
 
 	return (
 		<div className="container-login">
 			<h2>Логин</h2>
-			{error && <p style={{ color: 'red' }}>{error}</p>}
 			<form method="post" onSubmit={handleLogin}>
 				<div>
 					<label htmlFor="username">Логин:</label>
@@ -64,10 +90,10 @@ const Login: React.FC = () => {
 					</label>
 				</div>
 				<button type='submit' disabled={isLoading}>Войти</button>
+				{error && <p style={{ color: 'red' }}>{errorMessage}</p>}
 			</form>
 			<div className="footer">
                 <p>Первый раз у нас? <NavLink to="/register">Регистрация</NavLink></p>
-				<p><NavLink to="/">Главная страница</NavLink></p>
             </div>
             </div>
 	);

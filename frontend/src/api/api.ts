@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { LoginCredentials, LoginResponse, RegisterResponse, RegisterUser } from '../models';
 
 
@@ -39,7 +39,7 @@ export const userApi = createApi({
         // регистрация пользователя
         createUser: builder.mutation<RegisterResponse, RegisterUser>({
             query: (userData) => ({
-                url: '/users/',
+                url: '/register/',
                 method: 'POST',
                 body: userData, // Данные для регистрации (логин, email, пароль)
             }),
