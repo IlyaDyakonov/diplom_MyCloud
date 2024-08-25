@@ -2,6 +2,21 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { LoginCredentials, LoginResponse, RegisterResponse, RegisterUser } from '../models';
 
 
+const getCookie = (name: string): string | null => {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+};
+
 // Определяем базовый запрос для API, который добавляет CSRF-токен в заголовки
 const baseQuery = fetchBaseQuery({
     baseUrl: '/api', // Указываем базовый URL для API запросов
@@ -18,7 +33,7 @@ const baseQuery = fetchBaseQuery({
 
 // RTK Query API для пользователя
 export const userApi = createApi({
-    reducerPath: 'userApi',
+    reducerPath: 'userQuery',
     baseQuery,
     endpoints: (builder) => ({
         // логин пользователя
@@ -47,20 +62,6 @@ export const userApi = createApi({
     })
 })
 
-const getCookie = (name: string): string | null => {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-};
 
 export const {
     useLoginActionMutation,

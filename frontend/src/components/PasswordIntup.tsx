@@ -18,4 +18,3 @@ const PasswordInput: React.FC<{password: string, setPassword: (password: string)
 }
 
 export default PasswordInput;
-

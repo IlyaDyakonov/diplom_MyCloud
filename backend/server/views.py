@@ -16,6 +16,8 @@ from rest_framework import permissions, viewsets, status
 from .models import User, File
 from .serializers import UserSerializer, FileSerializer
 
+import json
+
 
 class UserViewSet(viewsets.ModelViewSet):
     # def get(self, request):
@@ -60,9 +62,16 @@ class UserViewSet(viewsets.ModelViewSet):
 @csrf_exempt
 def user_login(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            username = data.get('username')
+            password = data.get('password')
+            print('username', username)
+            print('password', password)
+            user = authenticate(request, username=username, password=password)
+            print('user', user)
+        except json.JSONDecodeError:
+            return JsonResponse({'message': 'Невалидный JSON'}, status=status.HTTP_400_BAD_REQUEST)
 
         if user:
             login(request, user)
@@ -78,18 +87,27 @@ def user_login(request):
 					'folder_name': user.folder_name,
 				},
 			}
+            print('response', response_data)
             return JsonResponse(response_data, status=status.HTTP_200_OK)
         else:
-            response_data = {
-				'message': 'Неверный логин или пароль',
-			}
-            return JsonResponse(response_data, status=status.HTTP_401_UNAUTHORIZED)
-    else:
-        response_data = {
-			'message': 'Метод не поддерживается',
-		}
-        return JsonResponse(response_data, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
+            # response_data = {
+			# 	'message': 'Неверный логин или пароль',
+			# }
+            # return JsonResponse(response_data, status=status.HTTP_401_UNAUTHORIZED)
+            try:
+                user = User.objects.get(username=username)
+                print(f"User found: {user}")
+            except User.DoesNotExist:
+                print(f"User with username '{username}' not found")
+                return JsonResponse({'message': 'Неверный логин или пароль'}, status=status.HTTP_401_UNAUTHORIZED)
+    # else:
+    #     response_data = {
+	# 		'message': 'Метод не поддерживается',
+	# 	}
+    #     return JsonResponse(response_data, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    elif request.method == 'GET':
+        return JsonResponse({'message': 'GET-запрос не поддерживается для этого ресурса'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    return JsonResponse({'message': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @csrf_protect
 def user_logout(request):

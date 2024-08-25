@@ -42,7 +42,7 @@ const Login: React.FC = () => {
 					localStorage.removeItem('username');
 					localStorage.removeItem('password');
 				}
-
+				console.log('Логин:', username, 'Пароль:', password);
 				const response = await loginAction({username, password});
 				if (response && response.error && 'error' in response) {
 					setErrorMessage(getError(response.error));
