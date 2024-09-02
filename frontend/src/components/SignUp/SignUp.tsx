@@ -1,18 +1,22 @@
+import './SignUp.css';
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import PasswordInput from "./PasswordIntup";
-import { useCreateUserMutation } from "../api/api";
+import { PasswordValidation } from "../../elements/PasswordValidate.tsx";
+// import { useCreateUserMutation } from "../../api/api.ts";
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store";
-import { setActiveState } from "../slices/usersSlice.ts";
+// import { useDispatch } from "react-redux";
+// import { AppDispatch } from "../../store/index.ts";
+// import { setActiveState } from "../../slices/usersSlice.ts";
+import useLoginValidation from '../../elements/LoginValidate.tsx';
+import { signUp } from "../../api/api.ts";
 
 
-const UseReg: React.FC = () => {
-	const dispatch = useDispatch<AppDispatch>();
-	const [createUser] = useCreateUserMutation();
+const SignUp: React.FC = () => {
+	// const dispatch = useDispatch<AppDispatch>();
+	// const [createUser] = useCreateUserMutation();
 	const navigate = useNavigate();
-	const [ username, setUsername ] = useState<string>("");
+	const { login, errorMessage: loginError, handleLoginChange } = useLoginValidation();
+	// const [ username, setUsername ] = useState<string>("");
 	const [ email, setEmail ] = useState<string>('');
 	const [ password, setPassword ] = useState<string>("");
 	const [ confirmPassword, setConfirmPassword ] = useState<string>('');
@@ -25,9 +29,14 @@ const UseReg: React.FC = () => {
 			setError("Пароли не совпадают");
 			return;
 		}
+		if (loginError) {
+			setError(loginError);
+			return;
+		}
+
 
 		try {
-			const result = await createUser({ username, email, password });
+			const result = await signUp({ username: login, email, password });
 			if (result.error ) {
                 if ('data' in result.error && result.error?.data) {
                     const typedError: FetchBaseQueryError = result.error.data as FetchBaseQueryError;
@@ -40,14 +49,14 @@ const UseReg: React.FC = () => {
 					console.error('Error creating user (no data):', result.error);
 					setError('Ошибка: Не удалось получить детали ошибки.');
 				}
-
 			} else {
 				console.log('User created successfully', result.data);
-				dispatch(setActiveState('login'));
+				// dispatch(setActiveState('login'));
 				navigate('/login');
 			}
 		} catch (err) {
 			console.error('Failed to create user:', err);
+			setError(`Ошибка: ${err instanceof Error ? err.message : 'Неизвестная ошибка'}`);
 		}
 	};
 
@@ -56,17 +65,18 @@ const UseReg: React.FC = () => {
 			<h2>Регистрация</h2>
 			<form method="post" onSubmit={handleRegistration}>
 				<div>
-					<label htmlFor="username">Ваш логин:</label>
+					<label htmlFor="username">Логин:</label>
 					<input
 						type="text"
 						id='username'
-						value={username}
+						value={login}
 						className="form-control"
 						placeholder="Введите логин"
 						autoComplete="off"
-						onChange={(e) => setUsername(e.target.value)}
+						onChange={(e) => handleLoginChange(e.target.value)}
 						required
 					/>
+					{loginError && <p style={{ color: 'red' }}>{loginError}</p>}
 				</div>
 				<div>
 					<label htmlFor="email">Email:</label>
@@ -82,20 +92,19 @@ const UseReg: React.FC = () => {
 						/>
 				</div>
 				<div className="form-group">
-					<PasswordInput password={password} setPassword={setPassword} confirm={true}/>
+					<PasswordValidation password={password} setPassword={setPassword} confirm={true}/>
 				</div>
 				<div className="form-group">
-					<PasswordInput password={confirmPassword} setPassword={setConfirmPassword} confirm={false}/>
+					<PasswordValidation password={confirmPassword} setPassword={setConfirmPassword} confirm={false}/>
 				</div>
 				<button type='submit'>Зарегестрироваться</button>
 				{error && <p style={{ color: 'red' }}>{error}</p>}
 			</form>
-			<div className="footer">
+			<div className="login">
                 <p>Уже зарегестрированы? <NavLink to="/login">Вход</NavLink></p>
             </div>
 		</div>
 	);
 };
 
-
-export default UseReg;
+export default SignUp;

@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth import authenticate, login, logout
 from django.http import FileResponse, JsonResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
@@ -10,8 +11,9 @@ from django.contrib.auth.forms import AuthenticationForm
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import action
 from rest_framework import permissions, viewsets, status
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .models import User, File
 from .serializers import UserSerializer, FileSerializer
@@ -73,40 +75,30 @@ def user_login(request):
         except json.JSONDecodeError:
             return JsonResponse({'message': 'Невалидный JSON'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if user:
+        if user is not None:
             login(request, user)
             response_data = {
-				'message': 'Успешная авторизация',
-				'user': {
-					'id': user.id,
-					'username': user.username,
-					'email': user.email,
-					'is_superuser': user.is_superuser,
-					'is_authenticated': user.is_authenticated,
-					'is_staff': user.is_staff,
-					'folder_name': user.folder_name,
-				},
-			}
+                'message': 'Успешная авторизация',
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'is_superuser': user.is_superuser,
+                    'is_authenticated': user.is_authenticated,
+                    'is_staff': user.is_staff,
+                    'folder_name': user.folder_name,
+                },
+            }
             print('response', response_data)
             return JsonResponse(response_data, status=status.HTTP_200_OK)
         else:
-            # response_data = {
-			# 	'message': 'Неверный логин или пароль',
-			# }
-            # return JsonResponse(response_data, status=status.HTTP_401_UNAUTHORIZED)
-            try:
-                user = User.objects.get(username=username)
-                print(f"User found: {user}")
-            except User.DoesNotExist:
-                print(f"User with username '{username}' not found")
-                return JsonResponse({'message': 'Неверный логин или пароль'}, status=status.HTTP_401_UNAUTHORIZED)
-    # else:
-    #     response_data = {
-	# 		'message': 'Метод не поддерживается',
-	# 	}
-    #     return JsonResponse(response_data, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            # Если пользователь не найден, возвращаем соответствующее сообщение
+            return JsonResponse({'message': 'Неверный логин или пароль'}, status=status.HTTP_401_UNAUTHORIZED)
+
     elif request.method == 'GET':
         return JsonResponse({'message': 'GET-запрос не поддерживается для этого ресурса'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    # Возвращаем ответ для других методов
     return JsonResponse({'message': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @csrf_protect
@@ -127,12 +119,56 @@ def user_logout(request):
 class FileViewSet(viewsets.ModelViewSet):
     queryset = File.objects.all()
     serializer_class = FileSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-    def list_files_by_user(self, request, username=None):
-        user = get_object_or_404(User, username=username)
+    # получение списка папок
+    def list (self, request, folder_name, *args, **kwargs):
+        if request.user.is_superuser:
+            # есть ли folder_name в запросе
+            if not folder_name:
+                return Response({"message": "Не указан идентификатор хранилища"}, status=status.HTTP_400_BAD_REQUEST)
+            # существует ли пользователь с указанным идентификатором хранилища
+            try:
+                user = User.object.get(folder_name=folder_name)
+            except User.DoesNotExist:
+                return Response({"message": "Пользователь с указанным идентификатором хранилища не найден"},
+								status=status.HTTP_404_NOT_FOUND)
+            # Получаем список файлов для указанного пользователя
+            queryset = File.object.filter(user=user) 
+        else:
+            # Если пользователь не администратор, получаем список файлов только для текущего пользователя
+            queryset = File.objects.filter(user=request.user)
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        files = File.objects.filter(user=user)
+    # @action(detail=False, methods=['post'], parser_classes=[MultiPartParser, FormParser])
+    def create (self, request, *args, **kwargs):
+        serializer = FileSerializer(data=request.data)
+        if serializer.is_valid():
+            file_instance = serializer.save(user=request.user)
+            return Response(FileSerializer(file_instance).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request, pk=None, *args, **kwargs):
+        file_instance = self.queryset.filter(user=request.user, pk=pk).first()
+        if not file_instance:
+            return Response({"message": "Файл не найден"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = FileSerializer(file_instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = self.get_serializers(request, many=True)
-
-        return Response(serializer.date, status=status.HTTP_200_OK)
+    def destroy (self, request, pk=None, *args, **kwargs):
+        file_instance = self.queryset.filter(user=request.user, pk=pk).first()
+        if not file_instance:
+            return Response({"message": "Файл не найден"}, status=status.HTTP_404_NOT_FOUND)
+        file_path = file_instance.path
+        if file_path and os.path.isfile(f"storage/{file_path}"):
+            try:
+                os.remove(f"storage/{file_path}")
+            except OSError as error:
+                return Response({"message": f"Ошибка при удалении файла: {error}"},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        file_instance.delete()
+        return Response({"message": "Файл успешно удален"}, status=status.HTTP_204_NO_CONTENT)

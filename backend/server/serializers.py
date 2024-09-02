@@ -57,9 +57,10 @@ class FileSerializer(serializers.ModelSerializer):
 
     # создание файла
     def create(self, validated_date):
-        instance = File(**validated_date)
-        instance.save()
-        return instance
+        # instance = File(**validated_date)
+        # instance.save()
+        # return instance
+        return super().create(validated_date)
 
     # обновление файла
     def update(self, instance, validated_date):

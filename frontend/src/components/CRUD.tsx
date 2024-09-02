@@ -1,50 +1,10 @@
-import { NavLink, Route, Routes, useLocation } from "react-router-dom";
-import Login from "./Login";
-import UseReg from "./UseReg";
+// import './css/CRUD.css';
+import { Route, Routes } from "react-router-dom";
+import Login from "./Login/Login";
+import UseReg from "./SignUp/SignUp";
+import Page404 from './Page404/Page404';
+import { StartPages } from './StartPage/StartPages';
 
-
-/**
- * Компонент для отображения навигационного меню.
- * Использует текущее местоположение для определения активной ссылки.
- */
-function Menu() {
-    const location = useLocation();
-    const isActive = 'crud-menu__item';
-    const isNoActive = 'crud-menu__item';
-
-    /**
-     * Проверяет, является ли путь активным.
-     * @param {string} path Путь для проверки.
-     * @returns {boolean} Возвращает true, если путь активен.
-     */
-    const isExactActive = (path: string) => location.pathname === path;
-    // Определяем текущий путь
-    const currentPath = location.pathname;
-
-    // Проверка, если мы находимся на странице логина или регистрации
-    const isLoginOrRegisterPage = currentPath === "/login" || currentPath === "/register";
-    // Рендеринг навигационного меню только если не находимся на страницах логина или регистрации
-    if (isLoginOrRegisterPage) {
-        return null; // Меню не будет отображаться
-    }
-    // Рендеринг навигационного меню
-    return (
-        <nav className="crud-menu">
-            {/* {activeState === 'login' ? (
-                <div className="login-name">
-                    Вы вошли как {currentUser?.username}
-                </div>
-            ) : ( */}
-            <>
-                <div className="menu-login">
-                    <NavLink to="/login" className={isExactActive('/login') ? isActive : isNoActive}>Вход</NavLink>
-                    <NavLink to="/register" className={isExactActive('/register') ? isActive : isNoActive}>Регистрация</NavLink>
-                </div>
-            </>
-            {/* </> )} */}
-        </nav>
-    )
-}
 
 /**
  * главный компомент с навигацией по сайту
@@ -52,13 +12,15 @@ function Menu() {
 function CRUD() {
     return (
         <div className="container navigation-menu">
-            <Menu />
-            <div className="page-crud">
+            {/* <Menu /> */}
+            {/* <div className="page-crud"> */}
                 <Routes>
+                    <Route path="/" element={<StartPages />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<UseReg />} />
+                    <Route path="*" element={<Page404 />} />
                 </Routes>
-            </div>
+            {/* </div> */}
         </div>
     );
 }

@@ -1,6 +1,7 @@
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { SerializedError } from '@reduxjs/toolkit';
 
+
 const getError = (error: FetchBaseQueryError | SerializedError | undefined): string => {
     if (error) {
         if ('status' in error) {
@@ -19,7 +20,6 @@ const getError = (error: FetchBaseQueryError | SerializedError | undefined): str
     }
     // Undefined
     return '';
-
 }
 
 export default getError;

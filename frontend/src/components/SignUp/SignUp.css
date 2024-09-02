@@ -1,0 +1,92 @@
+/* Стили для контейнера регистрации */
+.container-register {
+    max-width: 500px; /* Ограничение ширины */
+    margin: 40px auto; /* Центрирование контейнера */
+    padding: 20px; /* Внутренние отступы */
+    background-color: #f9f9f9; /* Светлый фон */
+    border: 1px solid #ddd; /* Граница */
+    border-radius: 8px; /* Скругление углов */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Тень для эффекта глубины */
+}
+
+/* Стили для заголовка */
+.container-register h2 {
+    text-align: center; /* Центрирование текста */
+    font-size: 1.8rem; /* Размер шрифта */
+    margin-bottom: 20px; /* Отступ снизу */
+    color: #333; /* Цвет текста */
+    font-family: 'Arial', sans-serif; /* Шрифт */
+}
+
+/* Стили для формы */
+form {
+    display: flex; /* Flexbox для выравнивания */
+    flex-direction: column; /* Вертикальное расположение элементов */
+    gap: 15px; /* Пробел между элементами */
+}
+
+/* Стили для меток (label) */
+form label {
+    font-size: 1rem; /* Размер шрифта */
+    margin-bottom: 5px; /* Отступ снизу */
+    color: #555; /* Цвет текста */
+}
+
+/* Стили для полей ввода */
+.form-control {
+    padding: 10px; /* Внутренние отступы */
+    font-size: 1rem; /* Размер шрифта */
+    border: 1px solid #ddd; /* Граница */
+    border-radius: 4px; /* Скругление углов */
+    transition: border-color 0.3s; /* Плавный переход цвета границы */
+}
+
+.form-control:focus {
+    border-color: #1da1f2; /* Цвет границы при фокусе */
+    outline: none; /* Убираем стандартное выделение */
+}
+
+/* Стили для кнопки */
+button[type='submit'] {
+    padding: 10px; /* Внутренние отступы */
+    font-size: 1rem; /* Размер шрифта */
+    background-color: #1da1f2; /* Цвет фона кнопки */
+    color: #fff; /* Цвет текста кнопки */
+    border: none; /* Убираем границу */
+    border-radius: 4px; /* Скругление углов */
+    cursor: pointer; /* Курсор при наведении */
+    transition: background-color 0.5s; /* Плавный переход цвета фона */
+}
+
+button[type='submit']:hover {
+    background-color: #1778b1; /* Цвет фона при наведении */
+}
+
+/* Стили для сообщения об ошибке */
+form p {
+    color: red; /* Цвет текста ошибки */
+    font-size: 0.9rem; /* Размер шрифта ошибки */
+    margin: 0; /* Убираем отступы */
+}
+
+/* Стили для ссылки входа */
+.login {
+    color: #009dff;
+    text-align: center; /* Центрирование текста */
+    margin-top: 20px; /* Отступ сверху */
+    font-size: 0.9rem; /* Размер шрифта */
+}
+
+.login a {
+    color: #004977; /* Цвет ссылки */
+    text-decoration: none; /* Убираем подчеркивание */
+    transition: color 0.3s; /* Плавный переход цвета */
+}
+
+.login a:hover {
+    color: #083047; /* Цвет ссылки при наведении */
+}
+
+.login a:visited {
+    color: #1da1f2; /* Цвет ссылки после клика */
+}

@@ -1,6 +1,7 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { LoginCredentials, LoginResponse, RegisterResponse, RegisterUser } from '../models';
+import axios from 'axios';
 
+
+const BASE_URL = '/api';
 
 const getCookie = (name: string): string | null => {
     let cookieValue = null;
@@ -18,53 +19,55 @@ const getCookie = (name: string): string | null => {
 };
 
 // Определяем базовый запрос для API, который добавляет CSRF-токен в заголовки
-const baseQuery = fetchBaseQuery({
-    baseUrl: '/api', // Указываем базовый URL для API запросов
-    prepareHeaders: (headers) => {
-        const csrfToken = getCookie('csrftoken');
-        if (csrfToken) {
-            headers.set('X-CSRFToken', csrfToken); // Добавляем CSRF-токен в заголовки
+// const baseQuery = fetchBaseQuery({
+//     baseUrl: '/api', // Указываем базовый URL для API запросов
+//     credentials: 'include',
+//     prepareHeaders: (headers) => {
+//         const csrfToken = getCookie('csrftoken');
+//         if (csrfToken) {
+//             headers.set('X-CSRFToken', csrfToken); // Добавляем CSRF-токен в заголовки
+//         }
+//         return headers;
+//     },
+// });
+
+export async function signUp(data: { email: string; password: string; username: string }) {
+    try {
+        const response = await axios.post(`${BASE_URL}/register/`, data, {
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken') || '', // Получаем CSRF-токен из cookie
+                'Content-Type': 'application/json',
+            },
+            withCredentials: true, // Включаем передачу кук
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export async function logIn(username: string, password: string) {
+    try {
+        const response = await fetch(`${BASE_URL}/login/`, {
+            method: 'POST',
+            credentials: 'include', // Включаем передачу кук
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') || '', // Получаем CSRF-токен из cookie
+            },
+            body: JSON.stringify({
+                username,
+                password,
+            }),
+        });
+        if (!response.ok) {
+            throw new Error('Ошибка авторизации');
         }
-        return headers;
-    },
-    credentials: 'include', // Включаем куки в запросы
-});
 
-
-// RTK Query API для пользователя
-export const userApi = createApi({
-    reducerPath: 'userQuery',
-    baseQuery,
-    endpoints: (builder) => ({
-        // логин пользователя
-        loginAction: builder.mutation<LoginResponse, LoginCredentials>({
-            query: (credentials) => ({
-                url: '/login/',
-                method: 'POST',
-                body: credentials, // Данные для авторизации (логин/пароль)
-            })
-        }),
-        // логаут пользователя
-        logoutAction: builder.mutation<void, void>({
-            query: () => ({
-                url: '/logout/',
-                method: 'POST', // Для логаута используется POST запрос
-            }),
-        }),
-        // регистрация пользователя
-        createUser: builder.mutation<RegisterResponse, RegisterUser>({
-            query: (userData) => ({
-                url: '/register/',
-                method: 'POST',
-                body: userData, // Данные для регистрации (логин, email, пароль)
-            }),
-        }),
-    })
-})
-
-
-export const {
-    useLoginActionMutation,
-    useLogoutActionMutation,
-    useCreateUserMutation,
-} = userApi;
+        return response.json();
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
