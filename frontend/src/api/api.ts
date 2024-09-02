@@ -18,18 +18,6 @@ const getCookie = (name: string): string | null => {
     return cookieValue;
 };
 
-// Определяем базовый запрос для API, который добавляет CSRF-токен в заголовки
-// const baseQuery = fetchBaseQuery({
-//     baseUrl: '/api', // Указываем базовый URL для API запросов
-//     credentials: 'include',
-//     prepareHeaders: (headers) => {
-//         const csrfToken = getCookie('csrftoken');
-//         if (csrfToken) {
-//             headers.set('X-CSRFToken', csrfToken); // Добавляем CSRF-токен в заголовки
-//         }
-//         return headers;
-//     },
-// });
 
 export async function signUp(data: { email: string; password: string; username: string }) {
     try {

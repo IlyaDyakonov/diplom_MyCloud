@@ -77,6 +77,10 @@ def user_login(request):
 
         if user is not None:
             login(request, user)
+
+            user.is_active = True  # Устанавливаем флаг активности
+            user.save()  # Сохраняем изменения в базе данных
+
             response_data = {
                 'message': 'Успешная авторизация',
                 'user': {
@@ -103,13 +107,23 @@ def user_login(request):
 
 @csrf_protect
 def user_logout(request):
-    try:
-        logout(request)
-        response_data = {
-            'message': 'Вы вышли из аккаунта'
-        }
-        return JsonResponse(response_data, status=status.HTTP_200_OK)
-    except User.DoesNotExist:
+    if request.user.is_authenticated:
+        try:
+            user = request.user
+            logout(request)
+            response_data = {
+                'message': 'Вы вышли из аккаунта'
+            }
+            user.is_active = False  # Устанавливаем флаг активности
+            user.save()  # Сохраняем изменения в базе данных
+            return JsonResponse(response_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            response_data = {
+                'message': 'Произошла ошибка при выходе из аккаунта',
+                'error': str(e)
+            }
+            return JsonResponse(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
         response_data = {
             'message': 'Вы не залогинены'
         }

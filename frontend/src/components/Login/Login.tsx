@@ -4,16 +4,18 @@ import React, { useEffect, useState } from "react";
 // import { useLoginActionMutation  } from '../../api/api';
 import { NavLink, useNavigate } from "react-router-dom";
 import { PasswordInput } from "../../elements/PasswordValidate";
-// import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import getError from "../../elements/GetError";
 // import {setActiveState, setLoginUser} from "../../../../slices/usersSlice";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { SerializedError } from "@reduxjs/toolkit";
 import { logIn } from '../../api/api';
+import { loginSuccess } from '../../slices/usersSlice';
+import { AppDispatch } from '../../store';
 
 
 const Login: React.FC = () => {
-	// const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
 	const [ username, setUsername ] = useState<string>("");
 	const [ password, setPassword ] = useState<string>("");
@@ -49,9 +51,10 @@ const Login: React.FC = () => {
 			console.log('Логин:', username, 'Пароль:', password);
 
 			const response = await logIn(username, password);
-			console.log('response111111:', response);
-			console.log('Успешный вход:', response.data);
+			// console.log('response111111:', response);
+			// console.log('Успешный вход:', response.data);
 			sessionStorage.setItem('loginUser', JSON.stringify(response.data.user));
+			dispatch(loginSuccess(response.data.user));
 			navigate('/');
 		} catch (error) {
 			console.error('Ошибка входа:', error);
