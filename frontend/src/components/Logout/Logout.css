@@ -1,0 +1,16 @@
+.form-out {
+    width: 80px;
+    height: 30px;
+    padding: 3px; /* Внутренние отступы */
+    font-size: 1rem; /* Размер шрифта */
+    background-color: #1da1f2; /* Цвет фона кнопки */
+    color: #fff; /* Цвет текста кнопки */
+    border: none; /* Убираем границу */
+    border-radius: 4px; /* Скругление углов */
+    cursor: pointer; /* Курсор указателя */
+    transition: background-color 0.5s; /* Плавный переход цвета фона */
+}
+    
+.form-out:hover {
+    background-color: #1778b1; /* Цвет фона при наведении */
+}

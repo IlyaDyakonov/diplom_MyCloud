@@ -41,8 +41,8 @@ export async function logIn(username: string, password: string) {
             method: 'POST',
             credentials: 'include', // Включаем передачу кук
             headers: {
-                'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken') || '', // Получаем CSRF-токен из cookie
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 username,
@@ -59,3 +59,36 @@ export async function logIn(username: string, password: string) {
         throw error;
     }
 }
+
+export async function logOut(username: string): Promise<Response> {
+    try {
+        console.log('логоут');
+        const response = await fetch(`${BASE_URL}/logout/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') || '',
+                // cookie: `sessionid=${getCookie('sessionid')}`,
+            },
+            body: JSON.stringify({ username: username }),
+        });
+        return response
+    } catch (error) {
+        console.error('Logout request failed:', error);
+        throw error;
+    }
+}
+
+export async function getFiles() {
+    try {
+        return axios.get(`${BASE_URL}/files/{folder_name}`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    } catch (error) {
+    console.error(error);
+    throw error;
+    }
+}
+

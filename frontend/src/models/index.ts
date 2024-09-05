@@ -38,30 +38,59 @@ export interface RegisterUser {
     password: string;
 }
 
-export interface FileType {
-	id: number;
-	file_name: string;
-	file: string;
-	user_id: number;
-	upload_date: string;
-	size: number;
-	path: string;
-	unique_id: string;
-}
-
 export interface EditFileType {
 	editFile: FileType | null;
 }
 
 export interface FileType {
 	id: number;
-	comment: string;
-	file: string;
 	file_name: string;
+	user: number;
+	file: string;
+	upload_date: string;
 	last_download_date: string;
+	comment: string;
 	path: string;
 	size: number;
 	unique_id: string;
-	upload_date: string;
-	user: number;
 }
+
+export interface FileElement {
+	id: number;
+	file_name: string;
+	upload_date: string;
+	last_download_date: string;
+	comment: string;
+	size: number;
+	user: string;
+}
+
+export interface FileProps extends FileElement {
+    currentFile: FileElement;
+    setCurrentFile: (file: FileElement) => void;
+}
+
+export interface FileDescriptionProps {
+	upload: string;
+	download: string; 
+	size: number; 
+	comment: string;
+}
+
+export interface FileListProps {
+    fileList: FileElement[];
+    currentFile: FileElement; // Опциональный текущий файл
+    setCurrentFile: (file: FileElement) => void; // Функция для установки текущего файла
+}
+
+
+// export interface FileType {
+// 	id: number;
+// 	file_name: string;
+// 	file: string;
+// 	user_id: number;
+// 	upload_date: string;
+// 	size: number;
+// 	path: string;
+// 	unique_id: string;
+// }

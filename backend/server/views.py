@@ -68,66 +68,74 @@ def user_login(request):
             data = json.loads(request.body.decode('utf-8'))
             username = data.get('username')
             password = data.get('password')
-            print('username', username)
-            print('password', password)
             user = authenticate(request, username=username, password=password)
-            print('user', user)
         except json.JSONDecodeError:
             return JsonResponse({'message': 'Невалидный JSON'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if user is not None:
-            login(request, user)
+        try:
+            user_from_db = User.objects.get(username=username)
+            if not user_from_db.is_active:
+                user_from_db.is_active = True  # Устанавливаем флаг активности
+                user_from_db.save()  # Сохраняем изменения в базе данных
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
 
-            user.is_active = True  # Устанавливаем флаг активности
-            user.save()  # Сохраняем изменения в базе данных
+                response_data = {
+                    'message': 'Успешная авторизация',
+                    'user': {
+                        'id': user.id,
+                        'username': user.username,
+                        'email': user.email,
+                        'is_superuser': user.is_superuser,
+                        'is_active': user.is_active,
+                        'is_staff': user.is_staff,
+                        'folder_name': user.folder_name,
+                    },
+                }
+                return JsonResponse(response_data, status=status.HTTP_200_OK)
 
-            response_data = {
-                'message': 'Успешная авторизация',
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'email': user.email,
-                    'is_superuser': user.is_superuser,
-                    'is_authenticated': user.is_authenticated,
-                    'is_staff': user.is_staff,
-                    'folder_name': user.folder_name,
-                },
-            }
-            print('response', response_data)
-            return JsonResponse(response_data, status=status.HTTP_200_OK)
-        else:
-            # Если пользователь не найден, возвращаем соответствующее сообщение
-            return JsonResponse({'message': 'Неверный логин или пароль'}, status=status.HTTP_401_UNAUTHORIZED)
-
+            else:
+                # Если пользователь не найден, возвращаем соответствующее сообщение
+                return JsonResponse({'message': 'Неверный логин или пароль'}, status=status.HTTP_401_UNAUTHORIZED)
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'Пользователь не найден'}, status=status.HTTP_404_NOT_FOUND)
     elif request.method == 'GET':
         return JsonResponse({'message': 'GET-запрос не поддерживается для этого ресурса'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     # Возвращаем ответ для других методов
     return JsonResponse({'message': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-@csrf_protect
+
+@ensure_csrf_cookie
 def user_logout(request):
-    if request.user.is_authenticated:
+    if request.method == 'POST':
         try:
-            user = request.user
+            if not request.body:
+                return JsonResponse({'message': 'Пустое тело запроса'}, status=status.HTTP_400_BAD_REQUEST)
+
+            data = json.loads(request.body.decode('utf-8'))
+            username = data.get('username')
+            
+            user_from_db = User.objects.get(username=username)
+            user_from_db.is_active = False  # Устанавливаем флаг активности
+            user_from_db.save()  # Сохраняем изменения в базе данных
+            
             logout(request)
-            response_data = {
-                'message': 'Вы вышли из аккаунта'
-            }
-            user.is_active = False  # Устанавливаем флаг активности
-            user.save()  # Сохраняем изменения в базе данных
+            response_data = {'message': 'Вы вышли из аккаунта'}
+            print('вы разлогинились')
             return JsonResponse(response_data, status=status.HTTP_200_OK)
+
+
+        except json.JSONDecodeError:
+            return JsonResponse({'message': 'Невалидный JSON'}, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'Пользователь не найден'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            response_data = {
-                'message': 'Произошла ошибка при выходе из аккаунта',
-                'error': str(e)
-            }
-            return JsonResponse(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'message': 'Произошла ошибка при выходе из аккаунта', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        response_data = {
-            'message': 'Вы не залогинены'
-        }
-        return JsonResponse(response_data, status=status.HTTP_302_OK)
+        return JsonResponse({'message': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 
 class FileViewSet(viewsets.ModelViewSet):

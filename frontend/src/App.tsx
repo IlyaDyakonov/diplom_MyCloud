@@ -9,16 +9,19 @@ function App() {
   return (
     <Router>
       <Header />
-      <header className='body'>
-        <nav className="nav-components">
+      <div className='body'>
           <Routes>
             <Route path="/*" element={<CRUD />} />
           </Routes>
-        </nav>
-      </header>
+      </div>
       <Footer />
     </Router>
   )
 }
 
 export default App;
+
+ДЛЯ СЕБЯ:
+логин и регистрация пользователей работает. отображение страниц работает.
+настроить переход после логина пользователя на страницу с его файлами(страница с файлами готова осталось правильно подключить)
+сделать админку пользователю

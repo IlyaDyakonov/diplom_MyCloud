@@ -55,7 +55,7 @@ form label input[type="checkbox"] {
 }
 
 /* Стили для кнопки */
-button[type='submit'] {
+.button-submit {
     padding: 10px; /* Внутренние отступы */
     font-size: 1rem; /* Размер шрифта */
     background-color: #1da1f2; /* Цвет фона кнопки */
@@ -66,11 +66,11 @@ button[type='submit'] {
     transition: background-color 0.5s; /* Плавный переход цвета фона */
 }
 
-button[type='submit']:hover {
+.button-submit:hover {
     background-color: #1778b1; /* Цвет фона при наведении */
 }
 
-button[type='submit']:disabled {
+.button-submit:disabled {
     background-color: #bbb; /* Цвет фона для отключенной кнопки */
     cursor: not-allowed; /* Курсор запрещения */
 }

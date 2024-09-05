@@ -2,36 +2,47 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { UserProps, UserType } from '../models';
 
 
-const initialState: UserProps = {
-	loginUser: null,
-	currentUser: null,
-	activeState: 'logout',
-	view: 'list',
-	isLoading: false,
-	error: '',
-}
+const loadInitialState = (): UserProps => {
+    const savedState = localStorage.getItem('authState');
+    if (savedState) {
+        return JSON.parse(savedState) as UserProps;
+    }
+    return {
+        loginUser: null,
+        currentUser: null,
+        activeState: 'logout', // начальное состояние по умолчанию
+        view: 'list',
+        isLoading: false,
+        error: '',
+    };
+};
+
+const initialState: UserProps = loadInitialState();
 
 const UsersSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        loginSuccess:(state, action: PayloadAction<UserType>) => {
+        loginSuccess: (state, action: PayloadAction<UserType>) => {
             state.activeState = 'auth';
             state.loginUser = action.payload;
+            localStorage.setItem('authState', JSON.stringify(state)); // Сохраняем состояние при успешном входе
         },
-        logout(state) {
+        logoutSuccess: (state) => {
             state.activeState = 'logout';
             state.loginUser = null;
+            localStorage.setItem('authState', JSON.stringify(state)); // Сохраняем состояние при выходе
         },
-    }
-})
+    },
+});
 
-export const { loginSuccess, logout } = UsersSlice.actions;
+export const { loginSuccess, logoutSuccess } = UsersSlice.actions;
 export default UsersSlice.reducer;
+
 
 // const usersSlice = createSlice({
 //     name: 'user',
-    // initialState,
+//     initialState,
 //     reducers: {
 //         setLoginUser(state, action) {  // Сеттер для установки залогиненного пользователя
 //             state.loginUser = action.payload;

@@ -51,11 +51,10 @@ const Login: React.FC = () => {
 			console.log('Логин:', username, 'Пароль:', password);
 
 			const response = await logIn(username, password);
-			// console.log('response111111:', response);
-			// console.log('Успешный вход:', response.data);
-			sessionStorage.setItem('loginUser', JSON.stringify(response.data.user));
-			dispatch(loginSuccess(response.data.user));
-			navigate('/');
+			sessionStorage.setItem('loginUser', JSON.stringify(response.user));
+			dispatch(loginSuccess(response.user));
+			navigate('/plus');
+			console.log('Вы успешно авторизованы! =)');
 		} catch (error) {
 			console.error('Ошибка входа:', error);
 			const errorMessage = getError(error as FetchBaseQueryError | SerializedError);
@@ -69,7 +68,7 @@ const Login: React.FC = () => {
 		<div className="container-login">
 			<h2>Логин</h2>
 			<form method="post" onSubmit={handleLogin}>
-				<div>
+				<div className="form-group">
 					<label htmlFor="username">Логин:</label>
 					<input
 						type="text"
@@ -93,7 +92,7 @@ const Login: React.FC = () => {
 						Запомнить меня
 					</label>
 				</div>
-				<button type='submit' disabled={isLoading}>Войти</button>
+				<button type='submit' className='button-submit' disabled={isLoading}>Войти</button>
 				{errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 			</form>
 			<div className="register">

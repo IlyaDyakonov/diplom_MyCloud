@@ -18,7 +18,7 @@ const SignUp: React.FC = () => {
 	const { login, errorMessage: loginError, handleLoginChange } = useLoginValidation();
 	// const [ username, setUsername ] = useState<string>("");
 	const [ email, setEmail ] = useState<string>('');
-	const [ password, setPassword ] = useState<string>("");
+	const [ password, setPassword ] = useState<string>('');
 	const [ confirmPassword, setConfirmPassword ] = useState<string>('');
 	const [ error, setError ] = useState<string | null>(null);
 
@@ -33,7 +33,6 @@ const SignUp: React.FC = () => {
 			setError(loginError);
 			return;
 		}
-
 
 		try {
 			const result = await signUp({ username: login, email, password });
@@ -97,7 +96,7 @@ const SignUp: React.FC = () => {
 				<div className="form-group">
 					<PasswordValidation password={confirmPassword} setPassword={setConfirmPassword} confirm={false}/>
 				</div>
-				<button type='submit'>Зарегестрироваться</button>
+				<button type='submit' className='button-submit'>Зарегестрироваться</button>
 				{error && <p style={{ color: 'red' }}>{error}</p>}
 			</form>
 			<div className="login">

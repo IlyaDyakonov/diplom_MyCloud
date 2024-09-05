@@ -53,6 +53,8 @@ class File(models.Model):
         default='uploads/'
     )
     upload_date = models.DateField(verbose_name='Дата загрузки', auto_now_add=True)
+    last_download_date = models.DateField(verbose_name='Дата последнего скачивания', null=True, blank=True)
+    comment = models.CharField(verbose_name='Комментарий', max_length=255, default='', blank=True)
     size = models.IntegerField(verbose_name='Размер файла')
     path = models.CharField(verbose_name='Путь к файлу')
     unique_id = models.CharField(verbose_name='Уникальный идентификатор', max_length=50, unique=True, blank=True)
