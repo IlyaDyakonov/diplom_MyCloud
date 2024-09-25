@@ -18,7 +18,7 @@ export function StartPages() {
     return (
         <nav className="crud-menu">
             {activeState === 'auth' && loginUser ? (
-                <div className="login-name">
+                <div className="auth-name">
                     <h1>Добро пожаловать в наш сервис, {loginUser.username}!</h1>
                 </div>
             ) : (

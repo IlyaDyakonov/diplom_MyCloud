@@ -39,3 +39,11 @@
     background-color: #052335; /* Цвет фона при наведении */
     color: #fff; /* Цвет текста при наведении */
 }
+
+.auth-name {
+    display: flex; /* Flexbox для вертикального расположения */
+    flex-direction: column; /* Вертикальное направление */
+    align-items: center; /* Центрирование по горизонтали */
+    gap: 10px; /* Пробел между элементами */
+    height: 50vh;
+}

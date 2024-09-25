@@ -60,7 +60,7 @@ export async function logIn(username: string, password: string) {
     }
 }
 
-export async function logOut(username: string): Promise<Response> {
+export async function logOut(username: string) {
     try {
         console.log('логоут');
         const response = await fetch(`${BASE_URL}/logout/`, {

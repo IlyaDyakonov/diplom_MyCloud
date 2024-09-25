@@ -20,7 +20,8 @@ export const PasswordInput: React.FC<{password: string, setPassword: (password: 
 }
 
 
-export const PasswordValidation: React.FC<{password: string, setPassword: (password: string) => void, confirm: boolean}> = ({ password, setPassword, confirm }) => {
+export const PasswordValidation: React.FC<{password: string, setPassword: (password: string) => void, confirm: boolean, setIsDisabled: (disabled: boolean) => void}> = ({ password, setPassword, confirm, setIsDisabled }) => {
+// export const PasswordValidation: React.FC<{password: string, setPassword: (password: string) => void, confirm: boolean}> = ({ password, setPassword, confirm }) => {
     const [errorMessage, setErrorMessage] = useState<string>('');
 
     const validatePassword = (password: string) => {
@@ -57,6 +58,12 @@ export const PasswordValidation: React.FC<{password: string, setPassword: (passw
         setPassword(newPassword);
         const validationMessage = validatePassword(newPassword);
         setErrorMessage(validationMessage);
+
+        if (validationMessage) {
+            setIsDisabled(true); // Если есть ошибка, отключаем кнопку
+        } else {
+            setIsDisabled(false); // Если ошибок нет, включаем кнопку
+        }
     };
 
     return (

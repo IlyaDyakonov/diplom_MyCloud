@@ -1,5 +1,5 @@
 import './SignUp.css';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { PasswordValidation } from "../../elements/PasswordValidate.tsx";
 // import { useCreateUserMutation } from "../../api/api.ts";
@@ -11,16 +11,18 @@ import useLoginValidation from '../../elements/LoginValidate.tsx';
 import { signUp } from "../../api/api.ts";
 
 
-const SignUp: React.FC = () => {
+const SignUp = () => {
 	// const dispatch = useDispatch<AppDispatch>();
 	// const [createUser] = useCreateUserMutation();
 	const navigate = useNavigate();
-	const { login, errorMessage: loginError, handleLoginChange } = useLoginValidation();
+
 	// const [ username, setUsername ] = useState<string>("");
 	const [ email, setEmail ] = useState<string>('');
 	const [ password, setPassword ] = useState<string>('');
 	const [ confirmPassword, setConfirmPassword ] = useState<string>('');
 	const [ error, setError ] = useState<string | null>(null);
+	const [ isDisabled, setIsDisabled] = useState<boolean>(true);
+	const { login, errorMessage: loginError, handleLoginChange } = useLoginValidation(setIsDisabled);
 
 	const handleRegistration = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -59,6 +61,17 @@ const SignUp: React.FC = () => {
 		}
 	};
 
+	useEffect(() => {
+		// массив состояние
+		const condition = false;
+		if (condition) {
+			setIsDisabled(true);
+		} else {
+			setIsDisabled(false);
+		}
+	}, [])
+
+
 	return (
 		<div className="container-register">
 			<h2>Регистрация</h2>
@@ -91,12 +104,12 @@ const SignUp: React.FC = () => {
 						/>
 				</div>
 				<div className="form-group">
-					<PasswordValidation password={password} setPassword={setPassword} confirm={true}/>
+					<PasswordValidation password={password} setPassword={setPassword} confirm={true} setIsDisabled={setIsDisabled}/>
 				</div>
 				<div className="form-group">
-					<PasswordValidation password={confirmPassword} setPassword={setConfirmPassword} confirm={false}/>
+					<PasswordValidation password={confirmPassword} setPassword={setConfirmPassword} confirm={false} setIsDisabled={setIsDisabled}/>
 				</div>
-				<button type='submit' className='button-submit'>Зарегестрироваться</button>
+				<button type='submit' className='button-submit' disabled={isDisabled}>Зарегестрироваться</button>
 				{error && <p style={{ color: 'red' }}>{error}</p>}
 			</form>
 			<div className="login">

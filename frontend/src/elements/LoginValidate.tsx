@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
 
-const useLoginValidation = () => {
+const useLoginValidation = (setIsDisabled: (disabled: boolean) => void) => {
     const [login, setLogin] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string>('');
+
 
     const validateLogin = (login: string) => {
         const loginRegex = /^[A-Za-z][A-Za-z0-9]{3,19}$/; // Проверка: первая буква латинская, длина от 4 до 20 символов
@@ -17,6 +18,12 @@ const useLoginValidation = () => {
         setLogin(newLogin);
         const validationMessage = validateLogin(newLogin);
         setErrorMessage(validationMessage);
+
+        if (validationMessage) {
+            setIsDisabled(true); // Если есть ошибка, отключаем кнопку
+        } else {
+            setIsDisabled(false); // Если ошибок нет, включаем кнопку
+        }
     };
 
     return { login, errorMessage, handleLoginChange };
