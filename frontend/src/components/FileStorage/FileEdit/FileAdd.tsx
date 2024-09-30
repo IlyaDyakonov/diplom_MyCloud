@@ -22,18 +22,22 @@ function FileAdd({ sendFile }) {
         if (fileChosen && fileChosen.length > 0) {
             sendFile(fileChosen.item(0));
             setFileChosen(); // очищаем выбранный файл
+            console.log(fileChosen);
+
             file.current.value = '';
+            // console.log(file.current.value);
         } else {
             console.error("No file chosen");
         }
     };
+
     return (
         !currentStorageUser
             ? (
                 <form className="file-input-form" onSubmit={onSubmitHandler}>
                     <div className="input-wrapper button">
                         <label htmlFor="input_file">
-                            Загрузить файл
+                            Выбрать файл
                             <input
                                 type="file"
                                 id="input_file"
@@ -46,7 +50,7 @@ function FileAdd({ sendFile }) {
                             : null}
                     </div>
                     {fileChosen && fileChosen.length
-                        ? <input className="uploadbtn" type="submit" value="👍" />
+                        ? <input className="uploadbtn" type="submit" value="Загрузить в облако 👍" />
                         : null}
                 </form>
             )

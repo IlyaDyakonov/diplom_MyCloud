@@ -29,6 +29,7 @@ function FilePage() {
     }, [currentStorageUserId])
 
     const loginUser = useSelector((state: RootState) => state.users.loginUser); // loginUser.name: apuox
+    // console.log(loginUser.id);
 
     const sendFile = async (file: File) => {
         const formData = new FormData();
@@ -36,7 +37,7 @@ function FilePage() {
         // formData.append('file_name', file.name);
         // formData.append('path', 'placeholder/path/to/file');
         formData.append('size', file.size.toString());
-        formData.append('user_id', loginUser.username); // вот тут логин пользователя
+        formData.append('user_id', loginUser.id); // вот тут логин пользователя
         // console.log(formData);
         // formData.append('comment', '');
         try {
