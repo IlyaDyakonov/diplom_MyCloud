@@ -1,0 +1,61 @@
+.file-input-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.input-wrapper label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer; /* Указывает, что элемент кликабельный */
+    background-color: #007bff; /* Цвет фона кнопки */
+    color: white; /* Цвет текста кнопки */
+    padding: 10px 20px; /* Отступы внутри кнопки */
+    border-radius: 5px; /* Скругление углов */
+    transition: background-color 0.3s ease; /* Плавный переход цвета фона */
+}
+
+.input-wrapper input[type="file"] {
+    display: none; /* Скрываем стандартный input file */
+}
+
+.input-wrapper label:hover {
+    background-color: #0056b3; /* Цвет фона при наведении */
+}
+
+.input-wrapper .preview {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333; /* Цвет текста */
+}
+
+.uploadbtn {
+    background-color: #007bff; /* Цвет фона кнопки */
+    color: white; /* Цвет текста кнопки */
+    border: none; /* Убираем рамку */
+    border-radius: 5px; /* Скругление углов */
+    padding: 10px 20px; /* Отступы внутри кнопки */
+    cursor: pointer; /* Указывает, что элемент кликабельный */
+    transition: background-color 0.3s ease; /* Плавный переход цвета фона */
+}
+
+.uploadbtn:hover {
+    background-color: #0056b3; /* Цвет фона при наведении */
+}
+
+.button {
+    margin-bottom: 15px; /* Отступ снизу для кнопки загрузки файла */
+}

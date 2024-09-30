@@ -79,16 +79,53 @@ export async function logOut(username: string) {
     }
 }
 
-export async function getFiles() {
+export async function getAllFiles() {
     try {
-        return axios.get(`${BASE_URL}/files/{folder_name}`, {
+        return axios.get(`${BASE_URL}/files/`, {
             headers: {
                 'Content-Type': 'application/json',
             },
         });
     } catch (error) {
-    console.error(error);
+    console.error('Error getting All files: ', error);
     throw error;
     }
 }
 
+export async function getUserFiles(user_id: string) {
+    try {
+        return axios.get(`${BASE_URL}/files/user_id=${user_id}`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    } catch (error) {
+    console.error('Error getting files: ', error);
+    throw error;
+    }
+}
+
+export async function createFile(data: FormData) {
+    try {
+        const response = await axios.post(`${BASE_URL}/files/`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data', // Указываем тип контента для загрузки файлов
+                'X-CSRFToken': getCookie('csrftoken') || '', // Добавляем CSRF-токен
+            },
+            withCredentials: true, // Включаем передачу кук
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // Сервер вернул ответ с кодом ошибки
+            console.error('Ошибка от сервера:', error.response.data);
+        } else if (error.request) {
+            // Запрос был отправлен, но ответа не было
+            console.error('Ошибка запроса:', error.request);
+        } else {
+            // Ошибка на уровне настройки запроса
+            console.error('Ошибка при настройке запроса:', error.message);
+        }
+        throw error;
+    }
+}

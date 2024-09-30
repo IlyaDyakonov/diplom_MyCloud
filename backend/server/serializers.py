@@ -47,13 +47,14 @@ class FileSerializer(serializers.ModelSerializer):
     # проверяем, есть ли уже файл с таким же именем
     def validate(self, attributes):
         name = attributes.get('file_name')
-        user_id = self.instance.user.id if self.instance else attributes['user'].id
+        user_id = self.instance.user.id if self.instance else attributes['user_id']
         if File.objects.filter(user=user_id, file_name=name).exists():
             final_file_name = name or attributes['file'].name
             path, file_name = File().created_path_and_file_name(user_id, final_file_name)
             attributes['path'] = path
             attributes['file_name'] = file_name
         return attributes
+
 
     # создание файла
     def create(self, validated_date):

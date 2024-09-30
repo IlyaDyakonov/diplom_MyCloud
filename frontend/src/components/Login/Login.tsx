@@ -53,7 +53,7 @@ const Login: React.FC = () => {
 			const response = await logIn(username, password);
 			sessionStorage.setItem('loginUser', JSON.stringify(response.user));
 			dispatch(loginSuccess(response.user));
-			navigate('/plus');
+			navigate('/folder');
 			console.log('Вы успешно авторизованы! =)');
 		} catch (error) {
 			console.error('Ошибка входа:', error);

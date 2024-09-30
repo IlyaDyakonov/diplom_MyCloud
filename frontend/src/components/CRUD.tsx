@@ -5,7 +5,7 @@ import Login from "./Login/Login";
 import UseReg from "./SignUp/SignUp";
 import Page404 from './Page404/Page404';
 import { StartPages } from './StartPage/StartPages';
-import FileList from './FileList/FileList';
+import FilePage from "./FilePage/FilePage";
 
 
 /**
@@ -18,7 +18,7 @@ function CRUD() {
                     <Route path="/" element={<StartPages />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<UseReg />} />
-                    <Route path="/folder" element={<FileList />} />
+                    <Route path="/folder" element={<FilePage />} />
                     <Route path="*" element={<Page404 />} />
                 </Routes>
         </div>
