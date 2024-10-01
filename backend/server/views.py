@@ -170,7 +170,18 @@ class FileViewSet(viewsets.ModelViewSet):
             file_instance = serializer.save(user=request.user)
             return Response(FileSerializer(file_instance).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+    # def post(self, request):
+    #     serializer = FileSerializer(data=request.data)
+    #     data = {}
+    #     if serializer.is_valid():
+    #         serializer.create(user_id=request.user.id, file=request.FILES['file'])
+    #         data = self.get_queryset().values('id', 'user__username', 'size', 'native_file_name', 'upload_date', 'last_download_date', 'comment')
+    #         return Response(data, status=status.HTTP_200_OK) 
+    #     data = serializer.errors
+    #     return Response(data)
+
+
     def update(self, request, pk=None, *args, **kwargs):
         file_instance = self.queryset.filter(user=request.user, pk=pk).first()
         if not file_instance:

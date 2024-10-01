@@ -109,8 +109,8 @@ export async function createFile(data: FormData) {
     try {
         const response = await axios.post(`${BASE_URL}/files/`, data, {
             headers: {
-                'Content-Type': 'multipart/form-data', // Указываем тип контента для загрузки файлов
-                'X-CSRFToken': getCookie('csrftoken') || '', // Добавляем CSRF-токен
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') || '',
             },
             withCredentials: true, // Включаем передачу кук
         });
