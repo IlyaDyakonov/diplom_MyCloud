@@ -1,18 +1,29 @@
-import { useContext, useRef, useState } from "react";
-import Context from '../../FilePage/state';
+import { createContext, useContext, useRef, useState } from "react";
+// import Context from '../../FilePage/state';
 import './FileAdd.css';
+import { FileAddProps } from "../../../models";
 
 
-function FileAdd({ sendFile }) {
-    const file = useRef();
-    const [fileChosen, setFileChosen] = useState();
-    const { currentStorageUser } = useContext(Context);
+const FileContext = createContext<{
+    currentStorageUser: number;
+    setCurrentStorageUser: (userId: number) => void;
+}>({
+    currentStorageUser: 0,
+    setCurrentStorageUser: () => {},
+});
+
+function FileAdd({ sendFile }: FileAddProps) {
+    const file = useRef<HTMLInputElement | null>(null);
+    const [fileChosen, setFileChosen] = useState<FileList | null>(null);
+    const { currentStorageUser } = useContext(FileContext);
 
     const onChangeHandler = () => {
-        setFileChosen(file.current.files);
+        if (file.current) { // Исправлено: проверка на наличие file.current
+            setFileChosen(file.current.files);
+        }
     };
 
-    const onSubmitHandler = (e) => {
+    const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // sendFile(fileChosen.item(0));
         // // console.log('Файл:', fileChosen.item(0));
@@ -21,10 +32,12 @@ function FileAdd({ sendFile }) {
 
         if (fileChosen && fileChosen.length > 0) {
             sendFile(fileChosen.item(0));
-            setFileChosen(); // очищаем выбранный файл
+            setFileChosen(null); // очищаем выбранный файл
             console.log(fileChosen);
 
-            file.current.value = '';
+            if (file.current) { // Исправлено: проверка на наличие file.current
+                file.current.value = ''; // Сбрасываем значение input
+            }
             // console.log(file.current.value);
         } else {
             console.error("No file chosen");
@@ -45,9 +58,9 @@ function FileAdd({ sendFile }) {
                                 onChange={onChangeHandler}
                             />
                         </label>
-                        {fileChosen && fileChosen.length
-                            ? <div className="preview">{fileChosen.item(0).name}</div>
-                            : null}
+                        {fileChosen && fileChosen.length > 0 ? (
+                            <div className="preview">{fileChosen.item(0).name}</div>
+                            ) : null}
                     </div>
                     {fileChosen && fileChosen.length
                         ? <input className="uploadbtn" type="submit" value="Загрузить в облако 👍" />

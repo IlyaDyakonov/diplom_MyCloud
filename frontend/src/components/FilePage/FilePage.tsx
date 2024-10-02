@@ -1,16 +1,24 @@
 import FileList from '../FileStorage/FileList/FileList';
 import { createFile, getAllFiles, getUserFiles } from '../../api/api';
-import { useContext, useState, useEffect } from 'react';
-import state from './state';
+import { createContext, useContext, useState, useEffect } from 'react';
+// import state from './state';
 import FileAdd from '../FileStorage/FileEdit/FileAdd';
 import { RootState } from "../../store";
 import { useSelector } from "react-redux";
 
 
+const FileContext = createContext<{
+    currentStorageUser: number;
+    setCurrentStorageUser: (userId: number) => void;
+}>({
+    currentStorageUser: 0,
+    setCurrentStorageUser: () => {},
+});
+
 function FilePage() {
-    const [currentFile, setCurrentFile] = useState();
-    const [files, setFiles] = useState([]);
-    const { currentStorageUser: currentStorageUserId } = useContext(state);
+    const [currentFile, setCurrentFile] = useState<File | null>(null);
+    const [files, setFiles] = useState<any[]>([]);
+    const { currentStorageUser: currentStorageUserId } = useContext(FileContext);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -37,7 +45,7 @@ function FilePage() {
         // formData.append('file_name', file.name);
         // formData.append('path', 'placeholder/path/to/file');
         formData.append('size', file.size.toString());
-        formData.append('user_id', loginUser.id); // вот тут логин пользователя
+        formData.append('user_id', loginUser.id.toString()); // вот тут логин пользователя
         // console.log(formData);
         // formData.append('comment', '');
         try {
@@ -50,23 +58,25 @@ function FilePage() {
     };
 
     return (
-        <>
-            <FileList 
-                fileList={files}
-                setCurrentFile={setCurrentFile}
-                currentFile={currentFile}
-            />
-            <FileAdd sendFile={sendFile} />
-            {/* {currentFile
-                ? (
-                    <FileEditPanel
-                        currentFile={currentFile}
-                        setFiles={setFiles}
-                        setCurrentFile={setCurrentFile}
-                    />
-                )
-                : null} */}
-        </>
+        <FileContext.Provider value={{ currentStorageUser: 0, setCurrentStorageUser: () => {} }}>
+            <>
+                <FileList 
+                    fileList={files}
+                    setCurrentFile={setCurrentFile}
+                    currentFile={currentFile}
+                />
+                <FileAdd sendFile={sendFile} />
+                {/* {currentFile
+                    ? (
+                        <FileEditPanel
+                            currentFile={currentFile}
+                            setFiles={setFiles}
+                            setCurrentFile={setCurrentFile}
+                        />
+                    )
+                    : null} */}
+            </>
+        </FileContext.Provider>
     )
 }
 

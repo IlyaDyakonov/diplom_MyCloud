@@ -92,7 +92,7 @@ export async function getAllFiles() {
     }
 }
 
-export async function getUserFiles(user_id: string) {
+export async function getUserFiles(user_id: number) {
     try {
         return axios.get(`${BASE_URL}/files/user_id=${user_id}`, {
             headers: {

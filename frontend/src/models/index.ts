@@ -83,7 +83,9 @@ export interface FileListProps {
     setCurrentFile: (file: FileElement) => void; // Функция для установки текущего файла
 }
 
-
+export interface FileAddProps {
+    sendFile: (file: File) => void; // Исправлено: указали тип для sendFile
+}
 // export interface FileType {
 // 	id: number;
 // 	file_name: string;
