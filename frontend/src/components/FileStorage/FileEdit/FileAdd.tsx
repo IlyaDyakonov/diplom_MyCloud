@@ -4,6 +4,7 @@ import './FileAdd.css';
 import { FileAddProps } from "../../../models";
 
 
+// РАЗОБРАТЬСЯ ВОТ ТУТ С КОНТЕКСТОМ И ID ПОЛЬЗОВАТЕЛЯ КОТОРОЕ ПЕРЕДАЁМ
 const FileContext = createContext<{
     currentStorageUser: number;
     setCurrentStorageUser: (userId: number) => void;
@@ -14,7 +15,7 @@ const FileContext = createContext<{
 
 function FileAdd({ sendFile }: FileAddProps) {
     const file = useRef<HTMLInputElement | null>(null);
-    const [fileChosen, setFileChosen] = useState<FileList | null>(null);
+    const [ fileChosen, setFileChosen ] = useState<FileList | null>(null);
     const { currentStorageUser } = useContext(FileContext);
 
     const onChangeHandler = () => {

@@ -48,6 +48,7 @@ class FileSerializer(serializers.ModelSerializer):
     def validate(self, attributes):
         name = attributes.get('file_name')
         user_id = self.instance.user.id if self.instance else attributes['user_id']
+        print('валидация имя файла:', name)
         if File.objects.filter(user=user_id, file_name=name).exists():
             final_file_name = name or attributes['file'].name
             path, file_name = File().created_path_and_file_name(user_id, final_file_name)

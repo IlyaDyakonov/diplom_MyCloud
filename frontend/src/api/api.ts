@@ -1,7 +1,8 @@
 import axios from 'axios';
+// import Cookies from 'js-cookie';
 
 
-const BASE_URL = '/api';
+const BASE_URL = 'http://localhost:8000/api';
 
 const getCookie = (name: string): string | null => {
     let cookieValue = null;
@@ -28,7 +29,15 @@ export async function signUp(data: { email: string; password: string; username: 
             },
             withCredentials: true, // Включаем передачу кук
         });
-        return response.data;
+        if (response.status === 201) {
+            const { token } = response.data;
+            
+            // Сохраняем токен в localStorage или Redux
+            localStorage.setItem('token', token);
+            
+            console.log('Registration successful, token saved.');
+            return response.data;
+        }
     } catch (error) {
         console.error(error);
         throw error;
@@ -52,8 +61,13 @@ export async function logIn(username: string, password: string) {
         if (!response.ok) {
             throw new Error('Ошибка авторизации');
         }
+        const data = await response.json();
 
-        return response.json();
+        // Сохраняем токен в localStorage после успешной авторизации
+        localStorage.setItem('token', data.token);
+
+        return data;
+        // return response.json();
     } catch (error) {
         console.error(error);
         throw error;
@@ -65,6 +79,7 @@ export async function logOut(username: string) {
         console.log('логоут');
         const response = await fetch(`${BASE_URL}/logout/`, {
             method: 'POST',
+            credentials: 'include', // Включаем передачу кук
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken') || '',
@@ -79,11 +94,24 @@ export async function logOut(username: string) {
     }
 }
 
+// const getToken = () => {
+//     return localStorage.getItem('token');  // Токен сохраняется в localStorage
+// }
+
+// запрос на получение файлов пользователей
 export async function getAllFiles() {
     try {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('Token not found, please login.');
+        }
+        // const token = getToken();
         return axios.get(`${BASE_URL}/files/`, {
             headers: {
                 'Content-Type': 'application/json',
+                // 'Authorization': `Token ${token}`,
+                'Authorization': `Bearer ${token}`,
             },
         });
     } catch (error) {
@@ -92,11 +120,18 @@ export async function getAllFiles() {
     }
 }
 
+// запрос на получение файлов определённого пользователя
 export async function getUserFiles(user_id: number) {
     try {
-        return axios.get(`${BASE_URL}/files/user_id=${user_id}`, {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('Token not found, please login.');
+        }
+        return axios.get(`${BASE_URL}/files/?user_id=${user_id}`, {
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
         });
     } catch (error) {

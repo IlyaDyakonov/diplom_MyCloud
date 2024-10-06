@@ -8,6 +8,7 @@ from django.middleware.csrf import get_token
 from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.forms import AuthenticationForm
+from rest_framework.authtoken.models import Token
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -51,12 +52,14 @@ class UserViewSet(viewsets.ModelViewSet):
             # проверяем что возвращаемый объект был экземпляром класса User, если нет, выдаём ошибку
             if not isinstance(user, User):
                 raise ValueError("Создаваемый объект не пользователь!")
+            token, created = Token.objects.get_or_create(user=user)
         except Exception as error:
             return Response({'detail': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
         response_data = {
             'message': 'Успешная регистрация',
             'user': UserSerializer(user).data,
+            'token': token.key,
         }
         return JsonResponse(response_data, status=status.HTTP_201_CREATED)
 
@@ -137,14 +140,29 @@ def user_logout(request):
         return JsonResponse({'message': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
+class AllowSuperUserOrAuthenticated(permissions.BasePermission):
+    """
+    Разрешение только для суперпользователей или аутентифицированных пользователей.
+    """
+    def has_permission(self, request, view):
+        if request.user and request.user.is_authenticated:
+            return True
+        if request.user and request.user.is_superuser:
+            return True
+        return False
 
 class FileViewSet(viewsets.ModelViewSet):
     queryset = File.objects.all()
     serializer_class = FileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
     # получение списка папок
     def list (self, request, folder_name=None, *args, **kwargs):
+        print('request111', request)
+        print("Метод list вызван!")  # Добавляем отладочный принт
+        print(f"Пользователь: {request.user}")  # Выводим пользователя
+        print(f"Метод запроса: {request.method}")  # Выводим тип запроса
         if request.user.is_superuser:
             # есть ли folder_name в запросе
             if not folder_name:
@@ -166,8 +184,12 @@ class FileViewSet(viewsets.ModelViewSet):
     # @action(detail=False, methods=['post'], parser_classes=[MultiPartParser, FormParser])
     def create (self, request, *args, **kwargs):
         serializer = FileSerializer(data=request.data)
+        
+        # print('валидация serializer:', serializer)
+        # print('валидация serializer.is_valid():', serializer.is_valid())
         if serializer.is_valid():
             file_instance = serializer.save(user=request.user)
+            # print('валидация file_instance:', file_instance)
             return Response(FileSerializer(file_instance).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

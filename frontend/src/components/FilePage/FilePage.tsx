@@ -16,25 +16,34 @@ const FileContext = createContext<{
 });
 
 function FilePage() {
-    const [currentFile, setCurrentFile] = useState<File | null>(null);
-    const [files, setFiles] = useState<any[]>([]);
-    const { currentStorageUser: currentStorageUserId } = useContext(FileContext);
+    const [ currentFile, setCurrentFile ] = useState<File | null>(null);
+    const [ files, setFiles ] = useState<any[]>([]);
+    // const [ currentStorageUser, setCurrentStorageUser ] = useState<number>(0);
+    const userId = useSelector((state: RootState) => state.users.loginUser.id);
+    const [currentStorageUser, setCurrentStorageUser] = useState<number>(userId || 0); // Устанавливаем ID текущего пользователя
 
     useEffect(() => {
+        if (userId) {
+            setCurrentStorageUser(userId);
+        }
         const fetchData = async () => {
             let response;
 
-            if (currentStorageUserId) {
-                response = await getUserFiles(currentStorageUserId);
+            if (!currentStorageUser) {
+                console.log(`Запрос на получения списка файлов отправлен! 1: ${currentStorageUser}`)
+                response = await getUserFiles(currentStorageUser);
+                // response = await getAllFiles();
+            // }
             } else {
+                console.log(`Запрос на получения списка файлов отправлен! 2: ${currentStorageUser}`)
                 response = await getAllFiles();
             }
             const data = response.data;
-            console.log(currentStorageUserId);
+            console.log('Запрос:', data)
             setFiles(data);
         }
         fetchData();
-    }, [currentStorageUserId])
+    }, [currentStorageUser, userId])
 
     const loginUser = useSelector((state: RootState) => state.users.loginUser); // loginUser.name: apuox
     // console.log(loginUser.id);
@@ -42,8 +51,8 @@ function FilePage() {
     const sendFile = async (file: File) => {
         const formData = new FormData();
         formData.append('file', file);
-        // formData.append('file_name', file.name);
-        // formData.append('path', 'placeholder/path/to/file');
+        formData.append('file_name', file.name);
+        formData.append('path', 'placeholder/path/to/file');
         formData.append('size', file.size.toString());
         formData.append('user_id', loginUser.id.toString()); // вот тут логин пользователя
         // console.log(formData);
@@ -58,7 +67,7 @@ function FilePage() {
     };
 
     return (
-        <FileContext.Provider value={{ currentStorageUser: 0, setCurrentStorageUser: () => {} }}>
+        <FileContext.Provider value={{ currentStorageUser, setCurrentStorageUser }}>
             <>
                 <FileList 
                     fileList={files}
