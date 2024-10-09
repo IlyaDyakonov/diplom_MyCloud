@@ -52,7 +52,7 @@ class UserViewSet(viewsets.ModelViewSet):
             # проверяем что возвращаемый объект был экземпляром класса User, если нет, выдаём ошибку
             if not isinstance(user, User):
                 raise ValueError("Создаваемый объект не пользователь!")
-            token, created = Token.objects.get_or_create(user=user)
+            token, _ = Token.objects.get_or_create(user=user)
         except Exception as error:
             return Response({'detail': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -84,8 +84,14 @@ def user_login(request):
             if user:
                 login(request, user)
 
+                token, created = Token.objects.get_or_create(user=user)
+                if not created:
+                    token.delete()  # Удаляем старый токен
+                    token = Token.objects.create(user=user)  # Создаём новый токен
+
                 response_data = {
                     'message': 'Успешная авторизация',
+                    'token': token.key,
                     'user': {
                         'id': user.id,
                         'username': user.username,
@@ -140,16 +146,16 @@ def user_logout(request):
         return JsonResponse({'message': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-class AllowSuperUserOrAuthenticated(permissions.BasePermission):
-    """
-    Разрешение только для суперпользователей или аутентифицированных пользователей.
-    """
-    def has_permission(self, request, view):
-        if request.user and request.user.is_authenticated:
-            return True
-        if request.user and request.user.is_superuser:
-            return True
-        return False
+# class AllowSuperUserOrAuthenticated(permissions.BasePermission):
+#     """
+#     Разрешение только для суперпользователей или аутентифицированных пользователей.
+#     """
+#     def has_permission(self, request, view):
+#         if request.user and request.user.is_authenticated:
+#             return True
+#         if request.user and request.user.is_superuser:
+#             return True
+#         return False
 
 class FileViewSet(viewsets.ModelViewSet):
     queryset = File.objects.all()

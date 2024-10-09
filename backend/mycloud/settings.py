@@ -45,14 +45,25 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",  # Должен быть первым для обеспечения безопасности.
-    "corsheaders.middleware.CorsMiddleware",  # Должен идти до CommonMiddleware, чтобы CORS заголовки добавлялись к ответам.
-    "django.contrib.sessions.middleware.SessionMiddleware",  # Управление сессиями.
-    "django.middleware.common.CommonMiddleware",  # Обработка общих запросов, таких как перенаправления.
     "django.middleware.csrf.CsrfViewMiddleware",  # Защита от CSRF-атак.
+    "django.contrib.sessions.middleware.SessionMiddleware",  # Управление сессиями.
+    "corsheaders.middleware.CorsMiddleware",  # Должен идти до CommonMiddleware, чтобы CORS заголовки добавлялись к ответам.
+    "django.middleware.common.CommonMiddleware",  # Обработка общих запросов, таких как перенаправления.
     "django.contrib.auth.middleware.AuthenticationMiddleware",  # Управление аутентификацией.
     "django.contrib.messages.middleware.MessageMiddleware",  # Работа с сообщениями.
     "django.middleware.clickjacking.XFrameOptionsMiddleware",  # Защита от clickjacking.
 ]
+
+# MIDDLEWARE = [
+#     "django.middleware.security.SecurityMiddleware",  # Должен быть первым для обеспечения безопасности.
+#     "django.contrib.sessions.middleware.SessionMiddleware",  # Управление сессиями.
+#     "django.middleware.common.CommonMiddleware",  # Обработка общих запросов, таких как перенаправления.
+#     "django.middleware.csrf.CsrfViewMiddleware",  # Защита от CSRF-атак.
+#     "django.contrib.auth.middleware.AuthenticationMiddleware",  # Управление аутентификацией.
+#     "django.contrib.messages.middleware.MessageMiddleware",  # Работа с сообщениями.
+#     "django.middleware.clickjacking.XFrameOptionsMiddleware",  # Защита от clickjacking.
+#     "corsheaders.middleware.CorsMiddleware",  # Должен идти до CommonMiddleware, чтобы CORS заголовки добавлялись к ответам.
+# ]
 
 ROOT_URLCONF = "mycloud.urls"
 

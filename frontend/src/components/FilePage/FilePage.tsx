@@ -69,7 +69,7 @@ function FilePage() {
     return (
         <FileContext.Provider value={{ currentStorageUser, setCurrentStorageUser }}>
             <>
-                <FileList 
+                <FileList
                     fileList={files}
                     setCurrentFile={setCurrentFile}
                     currentFile={currentFile}
