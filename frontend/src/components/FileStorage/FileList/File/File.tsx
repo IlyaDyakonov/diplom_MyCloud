@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
-import { FileProps } from '../../../models';
+import { FileProps } from '../../../../models';
 import FileDescription from './FileDescription';
 
 

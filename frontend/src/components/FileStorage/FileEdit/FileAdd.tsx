@@ -14,63 +14,58 @@ const FileContext = createContext<{
 });
 
 function FileAdd({ sendFile }: FileAddProps) {
-    const file = useRef<HTMLInputElement | null>(null);
-    const [ fileChosen, setFileChosen ] = useState<FileList | null>(null);
-    const { currentStorageUser } = useContext(FileContext);
+    const file = useRef<HTMLInputElement | null>(null); // Реф на input для выбора файлов
+    const [fileChosen, setFileChosen] = useState<FileList | null>(null); // Состояние выбранных файлов
+    const { currentStorageUser } = useContext(FileContext); // Получаем ID пользователя из контекста
 
+    // Обработчик выбора файла
     const onChangeHandler = () => {
-        if (file.current) { // Исправлено: проверка на наличие file.current
-            setFileChosen(file.current.files);
+        if (file.current) { // Проверка, что file.current существует
+            setFileChosen(file.current.files); // Устанавливаем выбранный файл в состояние
         }
     };
 
+    // Обработчик отправки формы
     const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        // sendFile(fileChosen.item(0));
-        // // console.log('Файл:', fileChosen.item(0));
-        // setFileChosen();
-        // file.current.value = '';
+        e.preventDefault(); // Предотвращаем перезагрузку страницы при отправке формы
 
+        // Проверка, что файл выбран
         if (fileChosen && fileChosen.length > 0) {
-            sendFile(fileChosen.item(0));
-            setFileChosen(null); // очищаем выбранный файл
-            console.log(fileChosen);
-
-            if (file.current) { // Исправлено: проверка на наличие file.current
-                file.current.value = ''; // Сбрасываем значение input
+            sendFile(fileChosen.item(0)); // Передача выбранного файла через функцию отправки
+            setFileChosen(null); // Очищаем выбранный файл после отправки
+            if (file.current) { // Сбрасываем значение input
+                file.current.value = '';
             }
-            // console.log(file.current.value);
         } else {
-            console.error("No file chosen");
+            console.error("No file chosen"); // Логируем ошибку, если файл не выбран
         }
     };
 
     return (
-        !currentStorageUser
-            ? (
-                <form className="file-input-form" onSubmit={onSubmitHandler}>
-                    <div className="input-wrapper button">
-                        <label htmlFor="input_file">
-                            Выбрать файл
-                            <input
-                                type="file"
-                                id="input_file"
-                                ref={file}
-                                onChange={onChangeHandler}
-                            />
-                        </label>
-                        {fileChosen && fileChosen.length > 0 ? (
-                            <div className="preview">{fileChosen.item(0).name}</div>
-                            ) : null}
-                    </div>
-                    {fileChosen && fileChosen.length
-                        ? <input className="uploadbtn" type="submit" value="Загрузить в облако 👍" />
-                        : null}
-                </form>
-            )
-            : null
+        !currentStorageUser ? ( // Показываем форму только если текущий пользователь не задан
+            <form className="file-input-form" onSubmit={onSubmitHandler}>
+                <div className="input-wrapper button">
+                    <label htmlFor="input_file">
+                        Выбрать файл
+                        <input
+                            type="file"
+                            id="input_file"
+                            ref={file} // Привязываем ref к input
+                            onChange={onChangeHandler} // Обработчик изменения выбора файлов
+                        />
+                    </label>
+                    {/* Отображаем превью выбранного файла, если он выбран */}
+                    {fileChosen && fileChosen.length > 0 ? (
+                        <div className="preview">{fileChosen.item(0)?.name}</div>
+                    ) : null}
+                </div>
+                {/* Отображаем кнопку загрузки только если файл выбран */}
+                {fileChosen && fileChosen.length > 0 ? (
+                    <input className="uploadbtn" type="submit" value="Загрузить в облако 👍" />
+                ) : null}
+            </form>
+        ) : null
     );
 }
-
 
 export default FileAdd;

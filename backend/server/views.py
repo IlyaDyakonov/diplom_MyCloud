@@ -189,13 +189,18 @@ class FileViewSet(viewsets.ModelViewSet):
 
     # @action(detail=False, methods=['post'], parser_classes=[MultiPartParser, FormParser])
     def create (self, request, *args, **kwargs):
-        serializer = FileSerializer(data=request.data)
-        
-        # print('валидация serializer:', serializer)
-        # print('валидация serializer.is_valid():', serializer.is_valid())
+        # serializer = FileSerializer(data=request.data)
+        # print(f"Файл получен: {request.FILES}")  # Проверьте, что файл действительно передаётся
+        data = request.data.copy()
+        file = request.FILES.get('file')
+        if file:
+            data['file'] = file
+        print(f"Файл получен: {data}")
+        serializer = FileSerializer(data=data, context={'request': request})  # Передайте файлы для сохранения
+
         if serializer.is_valid():
             file_instance = serializer.save(user=request.user)
-            # print('валидация file_instance:', file_instance)
+            print(f"отправляем в сериалайзер! {file_instance}")
             return Response(FileSerializer(file_instance).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

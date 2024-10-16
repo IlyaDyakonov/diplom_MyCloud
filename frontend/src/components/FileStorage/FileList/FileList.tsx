@@ -10,19 +10,31 @@ const FileList: React.FC<FileListProps> = ({
 }) => {
     const [users, setUsers] = useState<string[]>([]);
 
+    // useEffect(() => {
+    //     const userList: string[] = [];
+    //     fileList.forEach((element: FileElement) => {
+    //         userList.push(element.user);
+    //     })
+    //     const set = new Set(userList);
+    //     const uniqUserList = Array.from(set);
+    //     setUsers(uniqUserList);
+    // }, [fileList]);
+
     useEffect(() => {
-        const userList: string[] = [];
-
-        fileList.forEach((element: FileElement) => {
-            userList.push(element.user);
-        })
-
-        const set = new Set(userList);
-        const uniqUserList = Array.from(set);
-
-        setUsers(uniqUserList);
+        if (fileList && fileList.length > 0) {
+            const userList: string[] = [];
+            fileList.forEach((element: FileElement) => {
+                userList.push(element.user);
+            });
+            const set = new Set(userList);
+            const uniqUserList = Array.from(set);
+            setUsers(uniqUserList);
+        }
     }, [fileList]);
 
+    if (!fileList || fileList.length === 0) {
+        return <div>No files available</div>;
+    }
 
     return (
         users && users.length > 1 ? (
@@ -52,22 +64,6 @@ const FileList: React.FC<FileListProps> = ({
                 </div>
             ))
             ) : (
-                // <div className="file-list-container">
-                //     {fileList.map((file: FileElement) => (
-                //         <File
-                //             key={file.id}
-                //             id={file.id}
-                //             user={file.user}
-                //             file_name={file.file_name}
-                //             comment={file.comment}
-                //             size={file.size}
-                //             upload_date={file.upload_date}
-                //             last_download_date={file.last_download_date}
-                //             currentFile={currentFile}
-                //             setCurrentFile={setCurrentFile}
-                //         />
-                //     ))}
-                // </div>
                 <div className="file-list-container">
                     { fileList.map(
                         (file) => (

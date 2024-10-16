@@ -159,13 +159,16 @@ export async function getUserFiles(user_id: number) {
 
 export async function createFile(data: FormData) {
     try {
+        const token = localStorage.getItem("token");
         const response = await axios.post(`${BASE_URL}/files/`, data, {
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
                 'X-CSRFToken': getCookie('csrftoken') || '',
+                'Authorization': `Token ${token}`,
             },
             withCredentials: true, // Включаем передачу кук
         });
+
         return response.data;
     } catch (error) {
         if (error.response) {
