@@ -1,0 +1,55 @@
+/* Всплывающее меню с чекбоксами или кнопками */
+.file-description-popup {
+    position: absolute;
+    top: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 10;
+}
+
+/* Показывать меню при наведении на файл */
+.file:hover .file-description-popup {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Элемент в меню */
+.file-description-item {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+/* Текст в меню */
+.file-description-name {
+    font-weight: bold;
+    color: #333;
+    margin-right: 10px;
+}
+
+/* Чекбоксы или кнопки */
+.file-description-checkbox {
+    margin-right: 8px;
+}
+
+.file-description-btn {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.file-description-btn:hover {
+    background-color: #45a049;
+}

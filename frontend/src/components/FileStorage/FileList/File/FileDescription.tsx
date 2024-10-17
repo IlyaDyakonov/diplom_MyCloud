@@ -1,4 +1,5 @@
-import { FileDescriptionProps } from '../../../models';
+import { FileDescriptionProps } from '../../../../models';
+import './FileDescription.css';
 
 
 const FileDescription: React.FC<FileDescriptionProps> = ({

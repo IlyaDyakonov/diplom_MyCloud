@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { FileProps } from '../../../../models';
 import FileDescription from './FileDescription';
-
+import "./File.css";
 
 const File: React.FC<FileProps> = ({
 	id,

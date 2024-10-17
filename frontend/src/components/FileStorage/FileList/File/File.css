@@ -1,0 +1,49 @@
+/* Основной квадратный файл с градиентом и тенью */
+.file {
+    width: 200px;
+    height: 200px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1), -5px -5px 10px rgba(255, 255, 255, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #333;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Анимация при наведении */
+.file:hover {
+    transform: scale(1.05);
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
+}
+
+/* Иконка файла (для красоты можно использовать фоновое изображение или SVG) */
+.file-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #cccccc;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+/* Имя файла */
+.file-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+    word-wrap: break-word;
+}
+
+/* Контейнер для файлов */
+.file-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    padding: 20px;
+}

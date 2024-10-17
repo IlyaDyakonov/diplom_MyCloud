@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import File from './File/File';
 import { FileElement, FileListProps } from '../../../models';
+import './FileList.css';
 
 
 const FileList: React.FC<FileListProps> = ({
