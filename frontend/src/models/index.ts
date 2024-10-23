@@ -86,13 +86,46 @@ export interface FileListProps {
 export interface FileAddProps {
     sendFile: (file: File) => void; // Исправлено: указали тип для sendFile
 }
-// export interface FileType {
-// 	id: number;
-// 	file_name: string;
-// 	file: string;
-// 	user_id: number;
-// 	upload_date: string;
-// 	size: number;
-// 	path: string;
-// 	unique_id: string;
-// }
+
+export interface FileEditPanelProps {
+    currentFile: {
+      id: number; // Типизируем идентификатор файла
+      native_file_name: string; // Типизируем название файла
+    };
+    setCurrentFile: () => void; // Функция сброса текущего файла
+    setFiles: (files: any[]) => void; // Функция обновления списка файлов
+}
+
+export interface FileGetLinkProps {
+    link: string;
+    setForm: () => void;
+}
+
+export interface FileRenameProps {
+    currentFile: {
+        id: number;
+        native_file_name: string;
+    };
+    setForm: () => void;
+    setFiles: (files: any[]) => void;
+}
+
+export interface FileDeleteProps {
+    currentFile: {
+        id: number;
+        native_file_name: string;
+    };
+    setForm: () => void;
+    setFiles: (files: any[]) => void;
+    setCurrentFile: () => void;
+}
+
+export interface FileCommentProps {
+    currentFile: {
+        id: number;
+        comment: string;
+        native_file_name: string;
+    };
+    setForm: () => void;
+    setFiles: (files: any[]) => void;
+}

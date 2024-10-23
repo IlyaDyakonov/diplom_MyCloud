@@ -1,10 +1,10 @@
 import FileList from '../FileStorage/FileList/FileList';
 import { createFile, getAllFiles, getUserFiles } from '../../api/api';
 import { createContext, useContext, useState, useEffect } from 'react';
-// import state from './state';
 import FileAdd from '../FileStorage/FileEdit/FileAdd';
 import { RootState } from "../../store";
 import { useSelector } from "react-redux";
+import FileEditPanel from '../FileStorage/FileEdit/FileEditPanel';
 
 
 const FileContext = createContext<{
@@ -46,15 +46,15 @@ function FilePage() {
     }, [currentStorageUser, userId])
 
     const loginUser = useSelector((state: RootState) => state.users.loginUser); // loginUser.name: apuox
-    // console.log(loginUser.id);
+    // console.log(loginUser.username);
 
     const sendFile = async (file: File) => {
         const formData = new FormData();
         formData.append('file', file.type);
         formData.append('file_name', file.name);
-        formData.append('path', `uploads/${file.name}_folder/${file.name}`);
+        formData.append('path', `uploads/${loginUser.username}_folder/${file.name}`);
         formData.append('size', file.size.toString());
-        formData.append('user_id', loginUser.id.toString()); // вот тут логин пользователя
+        formData.append('user_id', loginUser.id.toString()); // вот тут ID пользователя
         console.log(`formData1: ${formData.get('size')}`);
         console.log(`formData2: ${formData.get('path')}`);
         console.log(`formData3: ${formData.get('user_id')}`);
@@ -69,7 +69,8 @@ function FilePage() {
             console.error('Error uploading file:', error);
         }
     };
-
+    console.error('currentFilecurrentFilecurrentFilecurrentFile:', currentFile);
+    
     return (
         <FileContext.Provider value={{ currentStorageUser, setCurrentStorageUser }}>
             <>
@@ -79,7 +80,8 @@ function FilePage() {
                     currentFile={currentFile}
                 />
                 <FileAdd sendFile={sendFile} />
-                {/* {currentFile
+                {currentFile
+                //  - понять почему тут возвращается null
                     ? (
                         <FileEditPanel
                             currentFile={currentFile}
@@ -87,7 +89,7 @@ function FilePage() {
                             setCurrentFile={setCurrentFile}
                         />
                     )
-                    : null} */}
+                    : null}
             </>
         </FileContext.Provider>
     )

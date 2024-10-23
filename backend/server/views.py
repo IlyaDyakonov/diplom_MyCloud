@@ -195,7 +195,8 @@ class FileViewSet(viewsets.ModelViewSet):
         file = request.FILES.get('file')
         if file:
             data['file'] = file
-        print(f"Файл получен: {data}")
+        print(f"Файл получен data: {data}")
+        print(f"Файл получен file: {file}")
         serializer = FileSerializer(data=data, context={'request': request})  # Передайте файлы для сохранения
 
         if serializer.is_valid():

@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 // import Cookies from 'js-cookie';
 
 
-const BASE_URL = 'http://localhost:8000/api';
+export const BASE_URL = 'http://localhost:8000/api';
 
 const getCookie = (name: string): string | null => {
     let cookieValue = null;
@@ -111,11 +111,7 @@ export async function logOut(username: string) {
     }
 }
 
-// const getToken = () => {
-//     return localStorage.getItem('token');  // Токен сохраняется в localStorage
-// }
-
-// запрос на получение файлов пользователей
+// запрос на получение файлов ВСЕХ пользователей
 export async function getAllFiles() {
     try {
         const token = localStorage.getItem("token");
@@ -123,17 +119,15 @@ export async function getAllFiles() {
         if (!token) {
             throw new Error('Token not found, please login. getAllFiles');
         }
-        // const token = getToken();
         return axios.get(`${BASE_URL}/files/`, {
             headers: {
                 'Content-Type': 'application/json',
-                // 'Authorization': `Token ${token}`,
                 'Authorization': `Token ${token}`,
             },
         });
     } catch (error) {
-    console.error('Error getting All files: ', error);
-    throw error;
+        console.error('Error getting All files: ', error);
+        throw error;
     }
 }
 
@@ -152,11 +146,12 @@ export async function getUserFiles(user_id: number) {
             },
         });
     } catch (error) {
-    console.error('Error getting files: ', error);
-    throw error;
+        console.error('Error getting files: ', error);
+        throw error;
     }
 }
 
+// Добавление файла в БД и загрузка на сервер
 export async function createFile(data: FormData) {
     try {
         const token = localStorage.getItem("token");
@@ -171,16 +166,73 @@ export async function createFile(data: FormData) {
 
         return response.data;
     } catch (error) {
-        if (error.response) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response) {
             // Сервер вернул ответ с кодом ошибки
-            console.error('Ошибка от сервера:', error.response.data);
-        } else if (error.request) {
+            console.error('Ошибка от сервера:', axiosError.response.data);
+        } else if (axiosError.request) {
             // Запрос был отправлен, но ответа не было
-            console.error('Ошибка запроса:', error.request);
+            console.error('Ошибка запроса:', axiosError.request);
         } else {
             // Ошибка на уровне настройки запроса
-            console.error('Ошибка при настройке запроса:', error.message);
+            console.error('Ошибка при настройке запроса:', axiosError.message);
         }
         throw error;
     }
+}
+
+export function downloadFile(id: number) {
+    try {
+        return axios.get(`${BASE_URL}link/${id}/`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    } catch (error) {
+        console.error('Error occurred during file download:', error);
+        throw error;
+    }
+}
+
+export function getDownloadLink(id: number) {
+    return axios.get(`${BASE_URL}link/?file_id=${id}`)
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+// переименование файла и изменение коммента
+export function patchFile(
+    data: { comment: string; id: number }, 
+    userStorageId: number | null = null
+) {
+    let params = '';
+
+    if (userStorageId) {
+        params = `?user_storage_id=${userStorageId}`;
+    }
+
+    return axios.patch(`${BASE_URL}files/${params}`, data, {
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken') || '',
+            // cookie: `sessionid=${Cookies.get('sessionid')}`,
+        },
+    });
+}
+
+// Удаление файла
+export function deleteFile(id: number, userStorageId: number | null = null) {
+    let params = '';
+
+    if (userStorageId) {
+        params = `&user_storage_id=${userStorageId}`;
+    }
+
+    return axios.delete(`${BASE_URL}files/?id=${id}${params}`, {
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken') || '',
+            'Content-Type': 'application/json',
+        },
+    });
 }

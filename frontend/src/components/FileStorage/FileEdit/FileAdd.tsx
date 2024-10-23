@@ -13,6 +13,7 @@ const FileContext = createContext<{
     setCurrentStorageUser: () => {},
 });
 
+
 function FileAdd({ sendFile }: FileAddProps) {
     const file = useRef<HTMLInputElement | null>(null); // Реф на input для выбора файлов
     const [fileChosen, setFileChosen] = useState<FileList | null>(null); // Состояние выбранных файлов
