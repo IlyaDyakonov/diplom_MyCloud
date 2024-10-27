@@ -34,29 +34,21 @@ class User(AbstractUser):
 
 def _create_directory_path(instance, filename):
     print(f'Вызов функции для сохранения файла!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    # Если file_name уже существует, используется оно, иначе берется значение value
-    name = instance.file_name or filename
+    #     # Если file_name уже существует, используется оно, иначе берется значение value
+    # name = instance.file_name or filename
     # Генерируется путь и имя файла
-    path = f'{instance.user.folder_name}'
-    print(f'name: {name}')
-    path, file_name = instance.created_path_and_file_name(instance.user.id, name)
+    path = f'{instance.path}'
     print(f'path: {path}')
-    # Полный путь с использованием MEDIA_ROOT
     full_path = os.path.join(settings.MEDIA_ROOT, path)
-    
     # Проверяем существование папки и создаем, если не существует
     if not os.path.exists(full_path):
         os.makedirs(full_path)
-        
     # Устанавливаем значения для полей модели
     instance.path = path
-    instance.file_name = file_name
-    
     print(f'Full directory path: {full_path}')
     print(f'File path (relative): {path}')
-    print(f'File name: {file_name}')
-    
     return f'{path}'.format(instance.user.id, filename)
+
 
 class File(models.Model):
     file_name = models.CharField(verbose_name='Название файла', max_length=255)
@@ -98,12 +90,12 @@ class File(models.Model):
 
     def save(self, *args, **kwargs):
         print(f'ВРОДЕ ЭТА ХУЕТА ВЫЗЫВАЕТСЯ22222222222222222222222222')
-        
+
         if not self.unique_id:
             self.unique_id = uuid4().hex  # Генерируем уникальный идентификатор для файла
 
         # Проверяем, есть ли расширение у файла
-        if not Path(self.file_name).suffix:  
+        if not Path(self.file_name).suffix:
             extension = os.path.splitext(self.file.name)[1]  
             self.file_name = self.file_name + extension  
 
@@ -117,8 +109,13 @@ class File(models.Model):
         print(f'Устанавливаем имя файла в поле file: {self.file.name}')
         super().save(*args, **kwargs)  # Сохраняем объект в базе данных
         print(f'Сохраняем объект в базе данных')
-        # Теперь получаем размер файла после его сохранения
-        # self.size = self.file.size
-        # print(f'Теперь получаем размер файла после его сохранения')
-        # self.save(update_fields=['size'])  # Обновляем только поле size
-        # print(f'Обновляем только поле size')
+
+        # # Устанавливаем имя файла с полным путём
+        # user_folder = f'{self.user.folder_name}'
+        # self.file.name = os.path.join(user_folder, self.file_name)
+
+        # # Устанавливаем путь к файлу
+        # self.path = os.path.dirname(self.file.name)
+
+        # # Сохраняем объект
+        # super().save(*args, **kwargs)
