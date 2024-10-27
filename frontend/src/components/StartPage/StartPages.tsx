@@ -19,7 +19,8 @@ export function StartPages() {
         <nav className="crud-menu">
             {activeState === 'auth' && loginUser ? (
                 <div className="auth-name">
-                    <h1>Добро пожаловать в наш сервис, {loginUser.username}!</h1>
+                    <h1>Добро пожаловать в наш сервис, уважаемый {loginUser.username}!</h1>
+                    <h1>Перейти в фаловое хранилище!<NavLink to="/folder" className={'crud-menu__item'}>Clik!</NavLink></h1>
                 </div>
             ) : (
                 <div className="menu-login">

@@ -4,6 +4,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
 from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 from uuid import uuid4
 import os
 from pathlib import Path
@@ -32,25 +33,30 @@ class User(AbstractUser):
         ordering = ('id', 'username',)
 
 def _create_directory_path(instance, filename):
-    print(f'Вызов функции для сохранения файла.')
+    print(f'Вызов функции для сохранения файла!!!!!!!!!!!!!!!!!!!!!!!!!!')
     # Если file_name уже существует, используется оно, иначе берется значение value
-    name = instance.file_name or filename.name
-    # Генерируется путь и имя файла с помощью метода created_path_and_file_name
+    name = instance.file_name or filename
+    # Генерируется путь и имя файла
+    path = f'{instance.user.folder_name}'
+    print(f'name: {name}')
     path, file_name = instance.created_path_and_file_name(instance.user.id, name)
-    # Присваиваются значения атрибутам path и file_name объекта instance
-    directory = os.path.dirname(f'uploads/{instance.user.folder_name}/{file_name}')
-    print(f'instance.user.folder_name: {instance.user.folder_name}')
-    print(f'Full directory path: {directory}')
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    print(f'path: {path}')
+    # Полный путь с использованием MEDIA_ROOT
+    full_path = os.path.join(settings.MEDIA_ROOT, path)
+    
+    # Проверяем существование папки и создаем, если не существует
+    if not os.path.exists(full_path):
+        os.makedirs(full_path)
         
+    # Устанавливаем значения для полей модели
     instance.path = path
     instance.file_name = file_name
-    print(f'1 {directory}')
-    print(f'2 {instance.path}')
-    print(f'3 {instance.file_name}')
-    return f'{directory}/{file_name}'  # Возвращаем путь для загрузки файла
-
+    
+    print(f'Full directory path: {full_path}')
+    print(f'File path (relative): {path}')
+    print(f'File name: {file_name}')
+    
+    return f'{path}'.format(instance.user.id, filename)
 
 class File(models.Model):
     file_name = models.CharField(verbose_name='Название файла', max_length=255)
@@ -83,7 +89,9 @@ class File(models.Model):
             print(f"base_name: {base_name}, counter: {counter}, extention: {extention}")
             counter += 1
 
-        path = f"uploads/{user.folder_name}/{unique_name}"
+        # path = f"uploads/{user.folder_name}/{unique_name}"
+        path = f"{user.folder_name}/{unique_name}"
+        # path = f"{user.folder_name}"
         file_name = unique_name
         print(f"код вызвался, путь: {path}, имя файла: {file_name}")
         return path, file_name
@@ -111,6 +119,6 @@ class File(models.Model):
         print(f'Сохраняем объект в базе данных')
         # Теперь получаем размер файла после его сохранения
         # self.size = self.file.size
-        print(f'Теперь получаем размер файла после его сохранения')
+        # print(f'Теперь получаем размер файла после его сохранения')
         # self.save(update_fields=['size'])  # Обновляем только поле size
-        print(f'Обновляем только поле size')
+        # print(f'Обновляем только поле size')

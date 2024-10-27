@@ -69,7 +69,7 @@ function FilePage() {
             console.error('Error uploading file:', error);
         }
     };
-    console.error('currentFilecurrentFilecurrentFilecurrentFile:', currentFile);
+    // console.error('currentFilecurrentFilecurrentFilecurrentFile:', currentFile);
     
     return (
         <FileContext.Provider value={{ currentStorageUser, setCurrentStorageUser }}>
