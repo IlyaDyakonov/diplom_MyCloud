@@ -1,56 +1,54 @@
 .form {
-    position: relative;
+    position: fixed;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 35%;
-    max-height: 50%;
-    padding-bottom: 10%;
-    border-radius: 20px;
-    border: 2px solid black;
-    box-shadow: -2px 5px 23px -1px rgb(0, 0, 0);
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    translate: -50% -50%;
+    justify-content: center;
+    width: clamp(200px, 20vw, 400px); /* Размер изменяется от 200px до 400px в зависимости от ширины экрана */
+    height: clamp(250px, 30vh, 450px); /* Высота от 250px до 450px */
+    padding: 2vh 2vw; /* Отступы адаптируются к высоте и ширине экрана */
+    border-radius: 1.5rem;
+    border: 3px solid black;
+    box-shadow: -2px 5px 23px -1px rgb(146, 0, 0);
+    left: 40%;
+    top: 40%;
+    transform: translate(-50%, -50%);
     background-color: #b0b0b0;
 }
 
 .form--title {
-    font-size: 2em;
-    height: fit-content;
+    font-size: clamp(1rem, 1.5vw, 2rem); /* Шрифт от 1rem до 2rem, адаптивный */
+    margin-bottom: 1em;
     text-align: center;
-    width: 70%;
+    width: 100%;
 }
 
-.form>input {
-    background-color: #ffffff;
-    height: 3em;
-    width: 70%;
-    margin: 20px 0;
+.form > input {
+    width: 90%; /* Ширина, адаптирующаяся под родителя */
+    height: clamp(2em, 2.5vh, 3em); /* Высота от 2em до 3em */
+    margin: 1em 0;
     border: none;
-    border-radius: 20px;
-    padding: 5px 20px;
-    font-size: 1em;
+    border-radius: 1rem;
+    padding: 0.5em 1em;
+    font-size: clamp(0.8rem, 1vw, 1.2rem); /* Шрифт адаптивный */
 }
 
-.form>input:focus {
-    border: none;
+.form > input:focus {
     outline-color: #008cff;
 }
 
-.form>input[type="submit"] {
+.form > input[type="submit"] {
     background-color: #008cff;
-    font-size: 1.5em;
-    width: 50%;
-    height: 5em;
+    font-size: clamp(1rem, 1.2vw, 1.5rem); /* Шрифт от 1rem до 1.5rem */
+    height: clamp(2.5em, 3vh, 4em); /* Высота от 2.5em до 4em */
     cursor: pointer;
-    margin-top: 60px;
+    margin-top: 1.5em;
+    width: 50%;
 }
 
-.form>input[type="submit"]:hover {
+.form > input[type="submit"]:hover {
     background-color: #0055ff;
-    transition: all 500ms;
+    transition: all 300ms;
 }
 
 .close {
@@ -58,32 +56,36 @@
     border: none;
     cursor: pointer;
     position: absolute;
-    top: 20px;
-    right: 20px;
-}
-
-.close:hover {
-    rotate: 45deg;
-    transition: all 500ms;
+    top: 1em;
+    right: 1em;
+    transition: transform 300ms;
+    transform-origin: center center;
 }
 
 textarea {
-    background-color: #ffffff;
-    height: 30%;
-    width: 70%;
-    margin: 20px 0;
+    width: 90%;
+    height: clamp(5em, 8vh, 12em); /* Высота адаптивная, от 5em до 12em */
+    min-height: 4em; /* Минимальная высота, до которой textarea может сжиматься */
+    max-height: 20em; /* Максимальная высота */
+    margin: 1em 0;
     border: none;
-    border-radius: 20px;
-    padding: 20px 20px;
-    font-size: 1em;
+    border-radius: 10px;
+    padding: 1em;
+    font-size: clamp(0.8rem, 1vw, 1rem); /* Адаптивный шрифт */
     font-family: inherit;
+    resize: vertical; /* Позволяет изменять высоту вручную, но фиксирует ширину */
+}
+
+
+.description {
+    font-size: clamp(1rem, 1.3vw, 1.5rem); /* Шрифт адаптивный */
+    font-weight: bold;
 }
 
 .no {
     cursor: pointer;
-}
-
-.description {
-    font-size: 1.3rem;
-    font-weight: bold;
+    border: 1px solid black;
+    border-radius: 20px;
+    width: 20%;
+    padding: 3%;
 }

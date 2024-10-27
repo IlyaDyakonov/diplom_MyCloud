@@ -18,8 +18,10 @@ const  FileDelete: React.FC<FileDeleteProps> = ({
         let response;
 
         if (currentStorageUser) {
+            console.log(`11111111: ${currentStorageUser}`);
             response = await deleteFile(currentFile.id, currentStorageUser);
         } else {
+            console.log(`22222222: ${currentStorageUser}`);
             response = await deleteFile(currentFile.id);
         }
 
@@ -51,7 +53,7 @@ const  FileDelete: React.FC<FileDeleteProps> = ({
                 type="button"
                 aria-label="Close"
             >
-                <img src={`${prefix}close.png`} alt="close" className="close"></img>
+                <img src={`${prefix}close.svg`} alt="close" className="close"></img>
             </button>
             <div
                 className="no"

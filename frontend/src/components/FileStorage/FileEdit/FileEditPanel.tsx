@@ -12,7 +12,7 @@ import './FileEditPanel.css';
 function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelProps) {
     const [patchForm, setPatchForm] = useState<string | undefined>();
     const [downloadLink, setDownloadLink] = useState<string | undefined>();
-
+    
     const onClickHandler = (action: string) => {
         if (action === 'download') {
             const downloadFileHandler = async () => {
@@ -43,25 +43,24 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
             const getLink = async () => {
                 const response = await getDownloadLink(currentFile.id);
                 const data = await response.data;
-
                 const link = `${BASE_URL}link/${data.link}/`;
                 setDownloadLink(link);
             };
-
             getLink();
         }
 
         setPatchForm(action);
     };
-
+    // console.log(`setPatchForm: ${currentFile}`);
+    // console.log(`patchForm: ${patchForm}`);
     return (
         <>
             <div className="file-edit-panel">
-                <div className="file-edit-panel--item" onClick={() => onClickHandler('rename')} onKeyDown={() => onClickHandler('rename')} role="button" tabIndex={0}>Переименовать</div>
-                <div className="file-edit-panel--item" onClick={() => onClickHandler('changeComment')} onKeyDown={() => onClickHandler('changeComment')} role="button" tabIndex={0}>Изм. комментарий</div>
-                <div className="file-edit-panel--item" onClick={() => onClickHandler('download')} onKeyDown={() => onClickHandler('download')} role="button" tabIndex={0}>Скачать</div>
-                <div className="file-edit-panel--item" onClick={() => onClickHandler('getLink')} onKeyDown={() => onClickHandler('getLink')} role="button" tabIndex={0}>Создать ссылку</div>
-                <div className="file-edit-panel--item" onClick={() => onClickHandler('delete')} onKeyDown={() => onClickHandler('delete')} role="button" tabIndex={0}>Удалить</div>
+                <div className="file-edit-panel--item" onClick={() => onClickHandler('rename')} onKeyDown={() => onClickHandler('rename')} role="button" tabIndex={0}>Rename</div>
+                <div className="file-edit-panel--item" onClick={() => onClickHandler('changeComment')} onKeyDown={() => onClickHandler('changeComment')} role="button" tabIndex={0}>Edit coment</div>
+                <div className="file-edit-panel--item" onClick={() => onClickHandler('download')} onKeyDown={() => onClickHandler('download')} role="button" tabIndex={0}>Download</div>
+                <div className="file-edit-panel--item" onClick={() => onClickHandler('getLink')} onKeyDown={() => onClickHandler('getLink')} role="button" tabIndex={0}>Create link</div>
+                <div className="file-edit-panel--item" onClick={() => onClickHandler('delete')} onKeyDown={() => onClickHandler('delete')} role="button" tabIndex={0}>Delete</div>
             </div>
             {patchForm === 'rename'
                 ? (

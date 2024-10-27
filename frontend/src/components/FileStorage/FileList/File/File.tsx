@@ -23,10 +23,26 @@ const File: React.FC<FileProps> = ({
 		setShowComment(false);
 	}
 
+	const handleClick = () => {
+		// Снять выделение, если клик происходит по уже выбранному файлу
+		if (currentFile?.id === id) {
+			setCurrentFile(null);
+		} else {
+			setCurrentFile({
+				id,
+				file_name,
+				upload_date,
+				last_download_date,
+				comment,
+				size,
+				user: ''
+			})}};
+
     return (
-        <div className="file"
+        <div className={`file ${currentFile?.id === id ? 'selected' : ''}`}
             onMouseOver={onMouseOverHandler}
 			onMouseLeave={onMouseLeaveHandler}
+			onClick={handleClick}
 		>
 			<div className={`file-name ${id}`}>{file_name}</div>
 			{ showComment 

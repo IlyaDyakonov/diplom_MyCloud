@@ -55,7 +55,7 @@ const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFile
                 type="button"
                 aria-label="Close"
             >
-                <img src={`${prefix}close.png`} alt="close" className="close"></img>
+                <img src={`${prefix}close.svg`} alt="close" className="close"></img>
             </button>
         </form>
     );

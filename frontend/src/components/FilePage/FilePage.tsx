@@ -79,17 +79,16 @@ function FilePage() {
                     setCurrentFile={setCurrentFile}
                     currentFile={currentFile}
                 />
-                <FileAdd sendFile={sendFile} />
-                {currentFile
-                //  - понять почему тут возвращается null
-                    ? (
+                { currentFile
+                    && (
                         <FileEditPanel
                             currentFile={currentFile}
                             setFiles={setFiles}
                             setCurrentFile={setCurrentFile}
                         />
-                    )
-                    : null}
+                    )}
+                <FileAdd sendFile={sendFile} />
+
             </>
         </FileContext.Provider>
     )

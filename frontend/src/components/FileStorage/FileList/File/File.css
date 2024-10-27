@@ -16,6 +16,12 @@
     transition: transform 0.1s ease, box-shadow 0.3s ease;
 }
 
+.file.selected {
+    background-color: #f0f0f0;
+    border: 3px solid #006cdf;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1), -5px -5px 10px #469fff;
+}
+
 /* Анимация при наведении */
 .file:hover {
     transform: scale(1.05);
