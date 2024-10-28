@@ -1,15 +1,19 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 // import PropTypes from 'prop-types';
 import { patchFile } from '../../../api/api';
 import GlobalStateContext from '../../FilePage/state.ts';
 import { FileCommentProps } from '../../../models';
 import './FileForm.css';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/index.ts';
 
 
 const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFiles }) => {
     const prefix = import.meta.env.BUILD_PREFIX || '';
     const newComment = useRef<HTMLTextAreaElement>(null);
-    const { currentStorageUser } = useContext(GlobalStateContext);
+    // const { currentStorageUser } = useContext(GlobalStateContext);
+    const userId = useSelector((state: RootState) => state.users.loginUser.id);
+    const [currentStorageUser, setCurrentStorageUser] = useState<number>(userId || 0); // Устанавливаем ID текущего пользователя
 
     useEffect(() => {
         if (newComment.current) {
@@ -17,18 +21,25 @@ const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFile
         }
     }, [currentFile.comment]);
 
+    console.log(`userId: ${userId}`);
+    console.log(`currentStorageUser: ${currentStorageUser}`);
+
     const onSubmitHandler = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        if (userId) {
+            setCurrentStorageUser(userId);
+        }
         const patchData = currentFile;
         patchData.comment = newComment.current.value;
 
         let response;
-
+        
         if (currentStorageUser) {
             response = await patchFile(patchData, currentStorageUser);
+            console.log(`response1: ${response}`);
         } else {
             response = await patchFile(patchData);
+            console.log(`response2: ${response}`);
         }
 
         const data = await response.data;

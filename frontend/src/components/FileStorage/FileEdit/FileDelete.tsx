@@ -68,11 +68,4 @@ const  FileDelete: React.FC<FileDeleteProps> = ({
     );
 }
 
-// FileDelete.propTypes = {
-//     currentFile: PropTypes.instanceOf(Object).isRequired,
-//     setForm: PropTypes.func.isRequired,
-//     setFiles: PropTypes.func.isRequired,
-//     setCurrentFile: PropTypes.func.isRequired,
-// };
-
 export default FileDelete;

@@ -181,11 +181,14 @@ export async function createFile(data: FormData) {
     }
 }
 
+// Получение ссылок на загрузку файла
 export function downloadFile(id: number) {
     try {
-        return axios.get(`${BASE_URL}link/${id}/`, {
+        const token = localStorage.getItem("token");
+        return axios.get(`${BASE_URL}/link/${id}/`, {
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Token ${token}`,
             },
         });
     } catch (error) {
@@ -195,27 +198,36 @@ export function downloadFile(id: number) {
 }
 
 export function getDownloadLink(id: number) {
-    return axios.get(`${BASE_URL}link/?file_id=${id}`)
-        .catch(error => {
-            console.error('Error:', error);
-        });
+    const token = localStorage.getItem("token");
+    
+    return axios.get(`${BASE_URL}/link/?file_id=${id}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
 }
 
 // переименование файла и изменение коммента
 export function patchFile(
     data: { comment: string; id: number }, 
-    userStorageId: number | null = null
+    userStorageId: number | null = null,
 ) {
+    const token = localStorage.getItem("token");
     let params = '';
+    console.log(`userStorageId: ${userStorageId}`)
+    console.log(`data.id: ${data.id}`)
+    console.log(`data.comment: ${data.comment}`)
 
     if (userStorageId) {
         params = `?user_storage_id=${userStorageId}`;
     }
 
-    return axios.patch(`${BASE_URL}files/${params}`, data, {
+    return axios.patch(`${BASE_URL}/files/${params}`, data, {
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken') || '',
+            'Authorization': `Token ${token}`,
             // cookie: `sessionid=${Cookies.get('sessionid')}`,
         },
     });
@@ -223,16 +235,18 @@ export function patchFile(
 
 // Удаление файла
 export function deleteFile(id: number, userStorageId: number | null = null) {
-    let params = '';
+    const token = localStorage.getItem("token");
 
-    if (userStorageId) {
-        params = `&user_storage_id=${userStorageId}`;
-    }
+    // Формируем URL в стиле RESTful для DELETE-запроса
+    const params = userStorageId ? `?user_storage_id=${userStorageId}` : '';
+    const fullUrl = `${BASE_URL}/files/${id}/${params}`;
+    console.log(`Deleting file at: ${fullUrl}`);  // Логирование URL для отладки
 
-    return axios.delete(`${BASE_URL}files/?id=${id}${params}`, {
+    return axios.delete(fullUrl, {
         headers: {
             'X-CSRFToken': getCookie('csrftoken') || '',
             'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
         },
     });
 }

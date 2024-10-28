@@ -31,7 +31,7 @@ function FileGetLink({ link, setForm }: FileGetLinkProps) {
                 aria-label="Close"
                 type="button"
             >
-                <img src={`${prefix}close.png`} alt="close" className="close"></img>
+                <img src={`${prefix}close.svg`} alt="close" className="close"></img>
             </button>
         </form>
     );

@@ -28,7 +28,7 @@ function FileAdd({ sendFile }: FileAddProps) {
 
     // Обработчик отправки формы
     const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); // Предотвращаем перезагрузку страницы при отправке формы
+        // e.preventDefault(); // Предотвращаем перезагрузку страницы при отправке формы
 
         // Проверка, что файл выбран
         if (fileChosen && fileChosen.length > 0) {

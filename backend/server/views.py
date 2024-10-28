@@ -1,4 +1,5 @@
 import os
+from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.http import FileResponse, JsonResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
@@ -9,15 +10,15 @@ from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.forms import AuthenticationForm
 from rest_framework.authtoken.models import Token
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework import permissions, viewsets, status
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from rest_framework.permissions import IsAuthenticated
 from .models import User, File
 from .serializers import UserSerializer, FileSerializer
+from datetime import date
 
 import json
 
@@ -146,17 +147,6 @@ def user_logout(request):
         return JsonResponse({'message': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-# class AllowSuperUserOrAuthenticated(permissions.BasePermission):
-#     """
-#     Разрешение только для суперпользователей или аутентифицированных пользователей.
-#     """
-#     def has_permission(self, request, view):
-#         if request.user and request.user.is_authenticated:
-#             return True
-#         if request.user and request.user.is_superuser:
-#             return True
-#         return False
-
 class FileViewSet(viewsets.ModelViewSet):
     queryset = File.objects.all()
     serializer_class = FileSerializer
@@ -205,15 +195,15 @@ class FileViewSet(viewsets.ModelViewSet):
             return Response(FileSerializer(file_instance).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # def post(self, request):
-    #     serializer = FileSerializer(data=request.data)
-    #     data = {}
-    #     if serializer.is_valid():
-    #         serializer.create(user_id=request.user.id, file=request.FILES['file'])
-    #         data = self.get_queryset().values('id', 'user__username', 'size', 'native_file_name', 'upload_date', 'last_download_date', 'comment')
-    #         return Response(data, status=status.HTTP_200_OK) 
-    #     data = serializer.errors
-    #     return Response(data)
+    def post(self, request):
+        serializer = FileSerializer(data=request.data)
+        data = {}
+        if serializer.is_valid():
+            serializer.create(user_id=request.user.id, file=request.FILES['file'])
+            data = self.get_queryset().values('id', 'user__username', 'size', 'native_file_name', 'upload_date', 'last_download_date', 'comment')
+            return Response(data, status=status.HTTP_200_OK) 
+        data = serializer.errors
+        return Response(data)
 
 
     def update(self, request, pk=None, *args, **kwargs):
@@ -230,12 +220,50 @@ class FileViewSet(viewsets.ModelViewSet):
         file_instance = self.queryset.filter(user=request.user, pk=pk).first()
         if not file_instance:
             return Response({"message": "Файл не найден"}, status=status.HTTP_404_NOT_FOUND)
-        file_path = file_instance.path
-        if file_path and os.path.isfile(f"storage/{file_path}"):
+        # file_path = file_instance.path
+        file_path = os.path.join(settings.MEDIA_ROOT, file_instance.path)
+        file_path = os.path.normpath(file_path)
+        print(f'file_path: {file_path}')
+        if file_path and os.path.isfile(f"uploads/{file_path}"):
             try:
-                os.remove(f"storage/{file_path}")
+                os.remove(f"uploads/{file_path}")
+                print(f"Файл {file_path} успешно удалён из хранилища.")
             except OSError as error:
                 return Response({"message": f"Ошибка при удалении файла: {error}"},
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         file_instance.delete()
         return Response({"message": "Файл успешно удален"}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_link(request):
+    user_id = request.user.id
+    file_id = request.query_params['file_id']
+
+    if request.user.is_staff:
+        file = File.objects.filter(id=file_id).first()
+    else:
+        file = File.objects.filter(user_id=user_id).filter(id=file_id).first()
+    
+    if file:
+        data = {
+            'link': file.path,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def get_file(request, link):
+    file = File.objects.filter(public_download_id=link).first()
+
+    if file:
+        file.last_download_date = date.today()
+        file.save()
+        
+        return FileResponse(file.file, status.HTTP_200_OK, as_attachment=True, filename=file.native_file_name)
+
+    return Response(status=status.HTTP_404_NOT_FOUND)
