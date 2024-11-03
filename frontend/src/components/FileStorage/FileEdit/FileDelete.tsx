@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 // import PropTypes from 'prop-types';
 import { deleteFile } from '../../../api/api';
-import GlobalStateContext from '../../FilePage/state.ts';
+import GlobalStateContext from '../FilePage/state.ts';
 import { FileDeleteProps } from '../../../models';
 import './FileForm.css';
 

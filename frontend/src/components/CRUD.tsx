@@ -5,7 +5,7 @@ import Login from "./Login/Login";
 import UseReg from "./SignUp/SignUp";
 import Page404 from './Page404/Page404';
 import { StartPages } from './StartPage/StartPages';
-import FilePage from "./FilePage/FilePage";
+import FilePage from "./FileStorage/FilePage/FilePage";
 
 
 /**

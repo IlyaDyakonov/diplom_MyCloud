@@ -3,8 +3,6 @@ import { FileGetLinkProps } from '../../../models';
 import './FileForm.css';
 
 
-// let inputRef = null
-
 function FileGetLink({ link, setForm }: FileGetLinkProps) {
     const prefix = import.meta.env.BUILD_PREFIX || '';
     const inputRef = useRef<HTMLInputElement>(null);
@@ -36,10 +34,5 @@ function FileGetLink({ link, setForm }: FileGetLinkProps) {
         </form>
     );
 }
-
-// FileGetLink.propTypes = {
-//     link: PropTypes.string.isRequired,
-//     setForm: PropTypes.func.isRequired,
-// };
 
 export default FileGetLink;

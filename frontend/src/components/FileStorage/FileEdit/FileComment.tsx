@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 // import PropTypes from 'prop-types';
 import { patchFile } from '../../../api/api';
-import GlobalStateContext from '../../FilePage/state.ts';
+import GlobalStateContext from '../FilePage/state.ts';
 import { FileCommentProps } from '../../../models';
 import './FileForm.css';
 import { useSelector } from 'react-redux';
@@ -72,10 +72,5 @@ const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFile
     );
 }
 
-// FileComment.propTypes = {
-//     currentFile: PropTypes.instanceOf(Object).isRequired,
-//     setForm: PropTypes.func.isRequired,
-//     setFiles: PropTypes.func.isRequired,
-// };
 
 export default FileComment;

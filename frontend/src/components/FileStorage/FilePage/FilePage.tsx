@@ -1,10 +1,10 @@
-import FileList from '../FileStorage/FileList/FileList';
-import { createFile, getAllFiles, getUserFiles } from '../../api/api';
+import FileList from '../FileList/FileList';
+import { createFile, getAllFiles, getUserFiles } from '../../../api/api';
 import { createContext, useContext, useState, useEffect } from 'react';
-import FileAdd from '../FileStorage/FileEdit/FileAdd';
-import { RootState } from "../../store";
+import FileAdd from '../FileEdit/FileAdd';
+import { RootState } from "../../../store";
 import { useSelector } from "react-redux";
-import FileEditPanel from '../FileStorage/FileEdit/FileEditPanel';
+import FileEditPanel from '../FileEdit/FileEditPanel';
 
 
 const FileContext = createContext<{
@@ -50,7 +50,7 @@ function FilePage() {
 
     const sendFile = async (file: File) => {
         const formData = new FormData();
-        formData.append('file', file.type);
+        formData.append('file', file);
         formData.append('file_name', file.name);
         formData.append('path', `uploads/${loginUser.username}_folder/${file.name}`);
         formData.append('size', file.size.toString());

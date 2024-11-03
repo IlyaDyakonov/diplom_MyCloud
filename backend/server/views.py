@@ -1,4 +1,5 @@
 import os
+from venv import logger
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.http import FileResponse, JsonResponse, HttpResponseRedirect
@@ -183,10 +184,14 @@ class FileViewSet(viewsets.ModelViewSet):
         # print(f"Файл получен: {request.FILES}")  # Проверьте, что файл действительно передаётся
         data = request.data.copy()
         file = request.FILES.get('file')
+        print("Все файлы в запросе:", request.FILES)  # Логируем все файлы в запросе
         if file:
             data['file'] = file
+            print("Тип файла:", type(file))  # Должно быть <class 'django.core.files.uploadedfile.InMemoryUploadedFile'>
+            print("Размер файла:", file.size)  # Проверьте, что размер файла соответствует оригиналу
         print(f"Файл получен data: {data}")
         print(f"Файл получен file: {file}")
+        print("Получен файл:", request.FILES.get('file'))
         serializer = FileSerializer(data=data, context={'request': request})  # Передайте файлы для сохранения
 
         if serializer.is_valid():
@@ -248,7 +253,7 @@ def get_link(request):
     
     if file:
         data = {
-            'link': file.path,
+            'link': file.unique_id,
         }
 
         return Response(data, status=status.HTTP_200_OK)
@@ -256,14 +261,41 @@ def get_link(request):
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# @api_view(['GET'])
+# def get_file(request, link):
+#     file = File.objects.filter(unique_id=link).first()
+
+#     if file:
+#         file.last_download_date = date.today()
+#         file.save()
+        
+#         return FileResponse(file.file, status.HTTP_200_OK, as_attachment=True, filename=file.file_name)
+
+#     return Response(status=status.HTTP_404_NOT_FOUND)
+
 @api_view(['GET'])
 def get_file(request, link):
-    file = File.objects.filter(public_download_id=link).first()
+    file = File.objects.filter(unique_id=link).first()
 
     if file:
-        file.last_download_date = date.today()
-        file.save()
-        
-        return FileResponse(file.file, status.HTTP_200_OK, as_attachment=True, filename=file.native_file_name)
+        file_path = os.path.join(settings.MEDIA_ROOT, file.path)  # Полный путь к файлу
+        file_path = os.path.normpath(file_path)
+        logger.info(f"Attempting to access file at: {file_path}")
+
+        if not os.path.isfile(file_path):
+            logger.error(f"Файл не найден по пути: {file_path}")
+            return Response({"message": "Файл не найден"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            file.last_download_date = date.today()
+            file.save()
+            # Отправляем файл как ответ
+            return FileResponse(open(file_path, 'rb'), status=status.HTTP_200_OK, as_attachment=True, filename=file.file_name)
+        except PermissionError as e:
+            logger.error(f"Ошибка доступа к файлу: {e}")
+            return Response({"message": f"Ошибка доступа к файлу: {e}"}, status=status.HTTP_403_FORBIDDEN)
+        except Exception as e:
+            logger.error(f"Ошибка при отправке файла: {e}")
+            return Response({"message": f"Ошибка при отправке файла: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response(status=status.HTTP_404_NOT_FOUND)

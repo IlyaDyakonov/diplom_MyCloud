@@ -129,3 +129,14 @@ export interface FileCommentProps {
     setForm: () => void;
     setFiles: (files: any[]) => void;
 }
+
+export interface UserTypeAdminPanel {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    is_staff: boolean;
+    isStaff?: boolean;
+    removeItem?: (id: number);
+}

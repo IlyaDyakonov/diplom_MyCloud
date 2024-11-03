@@ -32,7 +32,6 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-
                 setCurrentFile();
             };
 
@@ -43,7 +42,7 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
             const getLink = async () => {
                 const response = await getDownloadLink(currentFile.id);
                 const data = await response.data;
-                const link = `${BASE_URL}link/${data.link}/`;
+                const link = `${BASE_URL}/link/${data.link}/`;
                 setDownloadLink(link);
             };
             getLink();
@@ -101,11 +100,5 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
         </>
     );
 }
-
-// FileEditPanel.propTypes = {
-//     currentFile: PropTypes.instanceOf(Object).isRequired,
-//     setCurrentFile: PropTypes.func.isRequired,
-//     setFiles: PropTypes.func.isRequired,
-// };
 
 export default FileEditPanel;

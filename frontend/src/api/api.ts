@@ -111,6 +111,57 @@ export async function logOut(username: string) {
     }
 }
 
+
+export async function getUserList() {
+    try {
+        const response = await axios.get(`${BASE_URL}/detail_users_list/`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (response.status !== 200) {
+            throw new Error('Request failed');
+        }
+        return await response.data;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+
+export function deleteUser(id: number) {
+    try {
+        const token = localStorage.getItem("token");
+        return axios.delete(`${BASE_URL}/delete_user/${id}/`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') || '',
+                'Authorization': `Token ${token}`,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function patchUser(id: number, isStaff: boolean) {
+    try {
+        const token = localStorage.getItem("token");
+        return await axios.patch(`${BASE_URL}/auth/users/${id}/`, {
+            is_staff: isStaff,
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') || '',
+                'Authorization': `Token ${token}`,
+            },
+        });
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
 // запрос на получение файлов ВСЕХ пользователей
 export async function getAllFiles() {
     try {
@@ -199,7 +250,7 @@ export function downloadFile(id: number) {
 
 export function getDownloadLink(id: number) {
     const token = localStorage.getItem("token");
-    
+
     return axios.get(`${BASE_URL}/link/?file_id=${id}`, {
         headers: {
             'Content-Type': 'application/json',
@@ -210,8 +261,7 @@ export function getDownloadLink(id: number) {
 
 // переименование файла и изменение коммента
 export function patchFile(
-    data: { comment: string; id: number }, 
-    userStorageId: number | null = null,
+    id: number, data: any, userStorageId: number | null = null
 ) {
     const token = localStorage.getItem("token");
     let params = '';
@@ -220,10 +270,10 @@ export function patchFile(
     console.log(`data.comment: ${data.comment}`)
 
     if (userStorageId) {
-        params = `?user_storage_id=${userStorageId}`;
+        params = userStorageId ? `?user_storage_id=${userStorageId}` : '';
     }
 
-    return axios.patch(`${BASE_URL}/files/${params}`, data, {
+    return axios.patch(`${BASE_URL}/files/${id}/${params}`, data, {
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken') || '',

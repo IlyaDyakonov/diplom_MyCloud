@@ -41,7 +41,8 @@ class FileSerializer(serializers.ModelSerializer):
             'size',
             'path',
             'unique_id',
-            'user_id'
+            'user_id',
+            'file'
         ]
 
     # проверяем, есть ли уже файл с таким же именем
@@ -73,11 +74,16 @@ class FileSerializer(serializers.ModelSerializer):
         # Генерируем новое имя файла, если файл с таким именем уже существует
         if File.objects.filter(user=user_id, file_name=name).exists():
             final_file_name = name or attributes['file'].name
-            path, file_name = File().created_path_and_file_name(user_id, final_file_name)
-            print('проверка user_id3:', user_id)
-            print('Имя файла изменено на:', file_name)
-            attributes['path'] = path
-            attributes['file_name'] = file_name
+
+            if final_file_name:
+                # Генерируем путь для нового имени файла
+                path, file_name = File().created_path_and_file_name(user_id, final_file_name)
+                attributes['path'] = path
+                attributes['file_name'] = file_name
+                print('проверка user_id3:', user_id)
+                print('Имя файла изменено на:', file_name)
+            else:
+                print("Имя файла не указано и не передано в запросе.")
         else:
             final_file_name = name or attributes['file'].name
             path, file_name = File().created_path_and_file_name(user_id, final_file_name)

@@ -33,21 +33,27 @@ class User(AbstractUser):
         ordering = ('id', 'username',)
 
 def _create_directory_path(instance, filename):
-    print(f'Вызов функции для сохранения файла!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    #     # Если file_name уже существует, используется оно, иначе берется значение value
-    # name = instance.file_name or filename
-    # Генерируется путь и имя файла
-    path = f'{instance.path}'
-    print(f'path: {path}')
-    full_path = os.path.join(settings.MEDIA_ROOT, path)
-    # Проверяем существование папки и создаем, если не существует
-    if not os.path.exists(full_path):
-        os.makedirs(full_path)
-    # Устанавливаем значения для полей модели
-    instance.path = path
-    print(f'Full directory path: {full_path}')
-    print(f'File path (relative): {path}')
-    return f'{path}'.format(instance.user.id, filename)
+    """Генерация пути и создание директории для пользователя внутри `uploads`."""
+    print(f'Вызов функции для сохранения файла!!!!!!!!')
+
+    # Только пользовательская папка будет добавляться к "uploads"
+    user_folder = instance.user.folder_name
+    user_name = filename
+    print(f'Создаем user_name: {user_name}')
+    print(f'Создаем user_folder: {user_folder}')
+    
+    # Относительный путь для сохранения файла (без лишнего "uploads")
+    # relative_path = os.path.join(user_folder)  # Теперь просто "user_folder"
+    # print(f'Создаем директорию relative_path: {relative_path}')
+    # Полный путь внутри MEDIA_ROOT (с "uploads")
+    full_path = os.path.join(settings.MEDIA_ROOT, user_folder)  # "uploads" добавляется здесь
+    os.makedirs(full_path, exist_ok=True)
+
+    print(f'Создаем директорию: {full_path}')
+    print(f'Имя файла для сохранения: {filename}')
+
+    # Возвращаем путь от "uploads" (относительный)
+    return os.path.join(user_folder, filename)
 
 
 class File(models.Model):
@@ -81,41 +87,36 @@ class File(models.Model):
             print(f"base_name: {base_name}, counter: {counter}, extention: {extention}")
             counter += 1
 
-        # path = f"uploads/{user.folder_name}/{unique_name}"
-        path = f"{user.folder_name}/{unique_name}"
-        # path = f"{user.folder_name}"
+        path = f"{user.folder_name}/"
         file_name = unique_name
         print(f"код вызвался, путь: {path}, имя файла: {file_name}")
         return path, file_name
 
+
     def save(self, *args, **kwargs):
-        print(f'ВРОДЕ ЭТА ХУЕТА ВЫЗЫВАЕТСЯ22222222222222222222222222')
+        print(f'Запуск метода save для {self.file_name}')
 
+        # Генерация уникального идентификатора, если его нет
         if not self.unique_id:
-            self.unique_id = uuid4().hex  # Генерируем уникальный идентификатор для файла
+            self.unique_id = uuid4().hex
 
-        # Проверяем, есть ли расширение у файла
+        # Проверка расширения файла
         if not Path(self.file_name).suffix:
-            extension = os.path.splitext(self.file.name)[1]  
-            self.file_name = self.file_name + extension  
+            extension = os.path.splitext(self.file.name)[1]
+            self.file_name = f"{self.file_name}{extension}"
 
-        # Генерируем путь для загрузки файла
+        # Создаем относительный путь для сохранения файла (без дублирования `uploads`)
+        # self.path, unique_file_name = self.created_path_and_file_name(self.user.id, self.file_name)
+        # print(f'Полный путь для unique_file_name: {unique_file_name}')
         print(f'self.file_name: {self.file_name}')
-        upload_path = _create_directory_path(self, self.file_name)
-        print(f'генерация пути: {upload_path}')
-        
-        # Устанавливаем путь к файлу
-        self.file.name = upload_path  # Устанавливаем имя файла в поле file
-        print(f'Устанавливаем имя файла в поле file: {self.file.name}')
-        super().save(*args, **kwargs)  # Сохраняем объект в базе данных
-        print(f'Сохраняем объект в базе данных')
 
-        # # Устанавливаем имя файла с полным путём
-        # user_folder = f'{self.user.folder_name}'
-        # self.file.name = os.path.join(user_folder, self.file_name)
+        self.file.name = self.file_name
+        print(f'Полный путь для сохранения: {self.path}')
+        print(f'Файл для записи: {self.file.name}')
 
-        # # Устанавливаем путь к файлу
-        # self.path = os.path.dirname(self.file.name)
+        try:
+            super().save(*args, **kwargs)
+            print(f'Файл {self.file.name} успешно сохранен.')
 
-        # # Сохраняем объект
-        # super().save(*args, **kwargs)
+        except Exception as e:
+            print(f'Ошибка при сохранении файла: {e}')

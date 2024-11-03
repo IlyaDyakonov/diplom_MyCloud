@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import './FileForm.css';
 import { patchFile } from '../../../api/api';
 // import state from '../../../../GlobalState/state';
-import GlobalStateContext from '../../FilePage/state.ts';
+import GlobalStateContext from '../FilePage/state.ts';
 import { FileRenameProps } from '../../../models';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/index.ts';
@@ -27,23 +27,18 @@ const FileRename: React.FC<FileRenameProps> = ({ currentFile, setForm, setFiles 
         if (userId) {
             setCurrentStorageUser(userId);
         }
-        // const patchData = currentFile;
-        // patchData.native_file_name = newFileName.current.value;
-        const patchData = { ...currentFile, native_file_name: newFileName.current?.value };
+        const patchData = { native_file_name: newFileName.current?.value };
 
-        let response;
+        try {
+            const response = await patchFile(currentFile.id, patchData, currentStorageUser);
+            const data = response.data;
 
-        if (currentStorageUser) {
-            response = await patchFile(patchData, currentStorageUser);
-        } else {
-            response = await patchFile(patchData);
-        }
-
-        const data = await response.data;
-
-        if (response.status === 200) {
-            setFiles(data);
-            setForm();
+            if (response.status === 200) {
+                setFiles(data);  // Обновляем список файлов с новым именем
+                setForm();
+            }
+        } catch (error) {
+            console.error('Ошибка при переименовании файла:', error);
         }
     };
 
@@ -68,10 +63,5 @@ const FileRename: React.FC<FileRenameProps> = ({ currentFile, setForm, setFiles 
     );
 }
 
-// FileRename.propTypes = {
-//     currentFile: PropTypes.instanceOf(Object).isRequired,
-//     setForm: PropTypes.func.isRequired,
-//     setFiles: PropTypes.func.isRequired,
-// };
 
 export default FileRename;

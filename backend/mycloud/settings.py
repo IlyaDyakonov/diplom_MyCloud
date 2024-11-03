@@ -173,5 +173,5 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 STATIC_URL = "/static/"
-MEDIA_URL = '/uploads/'
 MEDIA_ROOT = BASE_DIR / 'uploads'
+MEDIA_URL = '/uploads/'
