@@ -12,9 +12,7 @@ const  FileDelete: React.FC<FileDeleteProps> = ({
     const prefix = import.meta.env.BUILD_PREFIX || '';
     const { currentStorageUser } = useContext(GlobalStateContext);
 
-    const onSubmitHandler = async (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const onSubmitHandler = async () => {
         let response;
 
         if (currentStorageUser) {

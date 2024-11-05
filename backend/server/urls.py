@@ -17,7 +17,7 @@ urlpatterns = [
     path("register/", UserViewSet.as_view({'post': 'create'}), name='user-register'),
     # path('api/detail_users_list/', get_detail_user_list),
     # path('api/delete_user/<int:user_id>/', delete_user),
-    path('files/', FileViewSet.as_view({'get': 'list', 'post': 'create'})),
+    # path('files/', FileViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('files/<int:pk>/', FileViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy', 'patch': 'update'}), name='file-detail'),
     path('files/<folder_name>/', FileViewSet.as_view({'get': 'list', 'post': 'create'}), name='file-list'),
     path('link/', get_link),

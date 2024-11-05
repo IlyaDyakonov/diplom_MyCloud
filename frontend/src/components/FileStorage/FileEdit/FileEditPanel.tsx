@@ -12,42 +12,47 @@ import './FileEditPanel.css';
 function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelProps) {
     const [patchForm, setPatchForm] = useState<string | undefined>();
     const [downloadLink, setDownloadLink] = useState<string | undefined>();
-    
-    const onClickHandler = (action: string) => {
+
+    const onClickHandler = (action: string) => {    
         if (action === 'download') {
             const downloadFileHandler = async () => {
-                const response = await getDownloadLink(currentFile.id);
-                const data = response.data;
-                console.log(`response in FileEditPanel: ${response}`)
-                console.log(`data in FileEditPanel: ${data}`)
+                try {
+                    // Получаем ссылку для скачивания
+                    const response = await getDownloadLink(currentFile.id);
+                    const data = response.data;
+                    const link = `${BASE_URL}/link/${data.link}/`;
+    
+                    // Создаем элемент ссылки и инициируем загрузку
+                    const a = document.createElement('a');
+                    a.href = link;
+                    a.download = currentFile.file_name; // задаем имя загружаемого файла
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
 
-                const downloadResponse = await downloadFile(data.link);
-                const downloadData = new Blob([downloadResponse.data]);
-
-                const fileURL = window.URL.createObjectURL(downloadData);
-                const link = document.createElement('a');
-                link.href = fileURL;
-                link.download = currentFile.native_file_name;
-
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                setCurrentFile();
+                    setCurrentFile(); // Сброс состояния
+                } catch (error) {
+                    console.error('Ошибка при загрузке файла:', error);
+                }
             };
-
             downloadFileHandler();
         }
-
+    
         if (action === 'getLink') {
             const getLink = async () => {
-                const response = await getDownloadLink(currentFile.id);
-                const data = await response.data;
-                const link = `${BASE_URL}/link/${data.link}/`;
-                setDownloadLink(link);
+                try {
+                    const response = await getDownloadLink(currentFile.id);
+                    const data = response.data;
+                    const link = `${BASE_URL}/link/${data.link}/`;
+                    console.log(`Ссылка для скачивания: ${link}`);
+                    setDownloadLink(link);
+                } catch (error) {
+                    console.error("Ошибка при получении ссылки:", error);
+                }
             };
             getLink();
         }
-
+    
         setPatchForm(action);
     };
     // console.log(`setPatchForm: ${currentFile}`);

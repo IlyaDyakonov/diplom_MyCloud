@@ -89,6 +89,7 @@ export interface FileAddProps {
 
 export interface FileEditPanelProps {
     currentFile: {
+      file_name: string;
       id: number; // Типизируем идентификатор файла
       native_file_name: string; // Типизируем название файла
     };

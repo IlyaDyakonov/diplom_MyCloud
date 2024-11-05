@@ -155,26 +155,30 @@ class FileViewSet(viewsets.ModelViewSet):
 
 
     # получение списка папок
-    def list (self, request, folder_name=None, *args, **kwargs):
-        print('request111', request)
-        print("Метод list вызван!")  # Добавляем отладочный принт
-        print(f"Пользователь: {request.user}")  # Выводим пользователя
-        print(f"Метод запроса: {request.method}")  # Выводим тип запроса
-        if request.user.is_superuser:
-            # есть ли folder_name в запросе
-            if not folder_name:
-                return Response({"message": "Не указан идентификатор хранилища"}, status=status.HTTP_400_BAD_REQUEST)
-            # существует ли пользователь с указанным идентификатором хранилища
+    def list(self, request, folder_name=None, *args, **kwargs):
+        user_id = request.query_params.get('user_id')
+
+        # Если админ запрашивает все файлы
+        if request.user.is_superuser and not user_id and not folder_name:
+            queryset = File.objects.all()
+
+        # Если указан `user_id`, получаем файлы этого пользователя
+        elif user_id:
+            queryset = File.objects.filter(user_id=user_id)
+
+        # Если указан `folder_name`, получаем файлы по имени папки
+        elif folder_name:
             try:
                 user = User.objects.get(folder_name=folder_name)
+                queryset = File.objects.filter(user=user)
             except User.DoesNotExist:
                 return Response({"message": "Пользователь с указанным идентификатором хранилища не найден"},
-                    status=status.HTTP_404_NOT_FOUND)
-            # Получаем список файлов для указанного пользователя
-            queryset = File.objects.filter(user=user) 
+                                status=status.HTTP_404_NOT_FOUND)
+        
+        # Иначе возвращаем файлы для текущего пользователя
         else:
-            # Если пользователь не администратор, получаем список файлов только для текущего пользователя
             queryset = File.objects.filter(user=request.user)
+
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -221,22 +225,31 @@ class FileViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy (self, request, pk=None, *args, **kwargs):
+    def destroy(self, request, pk=None, *args, **kwargs):
+        # Получаем экземпляр файла по user и pk
         file_instance = self.queryset.filter(user=request.user, pk=pk).first()
         if not file_instance:
             return Response({"message": "Файл не найден"}, status=status.HTTP_404_NOT_FOUND)
-        # file_path = file_instance.path
-        file_path = os.path.join(settings.MEDIA_ROOT, file_instance.path)
-        file_path = os.path.normpath(file_path)
+        
+        # Формируем полный путь к файлу
+        # Здесь мы используем file_instance.file.name для получения имени файла
+        file_path = os.path.join(settings.MEDIA_ROOT, file_instance.file.name)  # Изменено: используем имя файла из поля file
+        file_path = os.path.normpath(file_path)  # Нормализуем путь
         print(f'file_path: {file_path}')
-        if file_path and os.path.isfile(f"uploads/{file_path}"):
+        
+        # Проверяем существование файла и удаляем его
+        if os.path.isfile(file_path):
+            print(f"тык тык")
             try:
-                os.remove(f"uploads/{file_path}")
+                os.remove(file_path)  # Удаляем файл по правильному пути
                 print(f"Файл {file_path} успешно удалён из хранилища.")
             except OSError as error:
                 return Response({"message": f"Ошибка при удалении файла: {error}"},
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Удаляем запись из базы данных
         file_instance.delete()
+        print(f"Файл {file_path} успешно удалён из хранилища.")  # Это сообщение теперь будет точным
         return Response({"message": "Файл успешно удален"}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -245,7 +258,7 @@ class FileViewSet(viewsets.ModelViewSet):
 def get_link(request):
     user_id = request.user.id
     file_id = request.query_params['file_id']
-
+    print(f"request.user.is_staff: {request.user.is_staff}")
     if request.user.is_staff:
         file = File.objects.filter(id=file_id).first()
     else:
@@ -261,25 +274,16 @@ def get_link(request):
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# @api_view(['GET'])
-# def get_file(request, link):
-#     file = File.objects.filter(unique_id=link).first()
-
-#     if file:
-#         file.last_download_date = date.today()
-#         file.save()
-        
-#         return FileResponse(file.file, status.HTTP_200_OK, as_attachment=True, filename=file.file_name)
-
-#     return Response(status=status.HTTP_404_NOT_FOUND)
-
 @api_view(['GET'])
 def get_file(request, link):
     file = File.objects.filter(unique_id=link).first()
 
     if file:
-        file_path = os.path.join(settings.MEDIA_ROOT, file.path)  # Полный путь к файлу
+        # Формируем полный путь к файлу
+        file_path = os.path.join(settings.MEDIA_ROOT, file.file.name)  
+        print(f"file path1: {file_path}")
         file_path = os.path.normpath(file_path)
+        
         logger.info(f"Attempting to access file at: {file_path}")
 
         if not os.path.isfile(file_path):
@@ -287,9 +291,11 @@ def get_file(request, link):
             return Response({"message": "Файл не найден"}, status=status.HTTP_404_NOT_FOUND)
 
         try:
-            file.last_download_date = date.today()
-            file.save()
+            # Обновляем только поле last_download_date без вызова save()
+            File.objects.filter(id=file.id).update(last_download_date=date.today())
+
             # Отправляем файл как ответ
+            print(f"file.file_name: {file.file_name}")
             return FileResponse(open(file_path, 'rb'), status=status.HTTP_200_OK, as_attachment=True, filename=file.file_name)
         except PermissionError as e:
             logger.error(f"Ошибка доступа к файлу: {e}")
