@@ -1,9 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-// import PropTypes from 'prop-types';
 import './FileForm.css';
 import { patchFile } from '../../../api/api';
-// import state from '../../../../GlobalState/state';
-import GlobalStateContext from '../FilePage/state.ts';
 import { FileRenameProps } from '../../../models';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/index.ts';
@@ -12,33 +9,40 @@ import { RootState } from '../../../store/index.ts';
 const FileRename: React.FC<FileRenameProps> = ({ currentFile, setForm, setFiles }) => {
     const prefix = import.meta.env.BUILD_PREFIX || '';
     const newFileName = useRef<HTMLInputElement>(null);
-    // const { currentStorageUser } = useContext(GlobalStateContext);
     const userId = useSelector((state: RootState) => state.users.loginUser.id);
     const [currentStorageUser, setCurrentStorageUser] = useState<number>(userId || 0); // Устанавливаем ID текущего пользователя
 
+    const [baseName, setBaseName] = useState('');
+    const [fileExtension, setFileExtension] = useState('');
+
     useEffect(() => {
-        if (newFileName.current) {
-            newFileName.current.value = currentFile.native_file_name;
-        }
-    }, [currentFile]);
+        // Разделяем имя файла и его расширение при монтировании
+        const fileParts = currentFile.file_name.split('.');
+        const extension = fileParts.pop();
+        setBaseName(fileParts.join('.'));
+        setFileExtension(extension ? `.${extension}` : '');
+    }, [currentFile.file_name]);
 
     const onSubmitHandler = async (e: React.FormEvent) => {
         e.preventDefault();
         if (userId) {
             setCurrentStorageUser(userId);
         }
-        const patchData = { native_file_name: newFileName.current?.value };
-
-        try {
-            const response = await patchFile(currentFile.id, patchData, currentStorageUser);
-            const data = response.data;
-
-            if (response.status === 200) {
-                setFiles(data);  // Обновляем список файлов с новым именем
-                setForm();
-            }
-        } catch (error) {
-            console.error('Ошибка при переименовании файла:', error);
+        const newFileNameValue = `${newFileName.current?.value || ''}${fileExtension}`;
+        const patchData = {
+            ...currentFile,
+            file_name: newFileNameValue,
+            user_id: userId || currentStorageUser  // Используем userId или currentStorageUser, если userId пуст
+        };
+        console.log(`1: ${currentFile.id}, 2: ${patchData.file_name}, 3: ${currentStorageUser}`);
+        // try {
+        const response = await patchFile(patchData, currentStorageUser);
+        const data = response.data;
+        // console.log(`qqqqqqqqqqqqqqq: ${JSON.stringify(data, null, 2)}`);
+        window.location.reload();
+        if (response.status === 200) {
+            setFiles(data);  // Обновляем список файлов с новым именем
+            setForm();
         }
     };
 
@@ -48,8 +52,8 @@ const FileRename: React.FC<FileRenameProps> = ({ currentFile, setForm, setFiles 
 
     return (
         <form className="form" onSubmit={onSubmitHandler}>
-            <h2 className="form-title">Переименовать</h2>
-            <input type="text" placeholder="new name" ref={newFileName} />
+            <h2 className="form-title">Переименовать:</h2>
+            <input type="text" placeholder="new name" ref={newFileName} defaultValue={baseName} />
             <input type="submit" value="OK" required />
             <button
                 className="close"

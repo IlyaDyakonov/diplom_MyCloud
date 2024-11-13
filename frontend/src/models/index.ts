@@ -56,6 +56,7 @@ export interface FileType {
 }
 
 export interface FileElement {
+    user_id?: string;
 	id: number;
 	file_name: string;
 	upload_date: string;
@@ -68,6 +69,7 @@ export interface FileElement {
 export interface FileProps extends FileElement {
     currentFile: FileElement;
     setCurrentFile: (file: FileElement) => void;
+    isOtherUserFile?: boolean;
 }
 
 export interface FileDescriptionProps {
@@ -81,6 +83,7 @@ export interface FileListProps {
     fileList: FileElement[];
     currentFile: FileElement; // Опциональный текущий файл
     setCurrentFile: (file: FileElement) => void; // Функция для установки текущего файла
+    currentUser: string;
 }
 
 export interface FileAddProps {
@@ -104,6 +107,7 @@ export interface FileGetLinkProps {
 
 export interface FileRenameProps {
     currentFile: {
+        file_name: unknown;
         id: number;
         native_file_name: string;
     };

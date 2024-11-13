@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 // import PropTypes from 'prop-types';
 import { patchFile } from '../../../api/api';
-import GlobalStateContext from '../FilePage/state.ts';
+// import GlobalStateContext from '../FilePage/state.ts';
 import { FileCommentProps } from '../../../models';
 import './FileForm.css';
 import { useSelector } from 'react-redux';
@@ -14,6 +14,7 @@ const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFile
     // const { currentStorageUser } = useContext(GlobalStateContext);
     const userId = useSelector((state: RootState) => state.users.loginUser.id);
     const [currentStorageUser, setCurrentStorageUser] = useState<number>(userId || 0); // Устанавливаем ID текущего пользователя
+
 
     useEffect(() => {
         if (newComment.current) {
@@ -29,24 +30,37 @@ const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFile
         if (userId) {
             setCurrentStorageUser(userId);
         }
-        const patchData = currentFile;
-        patchData.comment = newComment.current.value;
+        // const patchData = currentFile;
+        // patchData.comment = newComment.current.value;
+        // const patchData = { ...currentFile, comment: newComment.current.value };
+        const patchData = {
+            ...currentFile,
+            comment: newComment.current?.value || '',
+            user_id: userId || currentStorageUser  // Используем userId или currentStorageUser, если userId пуст
+        };
+        console.log(`patchData: ${JSON.stringify(patchData, null, 2)}`);
+        console.log(`currentFile: ${JSON.stringify(currentFile, null, 2)}`);
 
-        let response;
-        
-        if (currentStorageUser) {
-            response = await patchFile(patchData, currentStorageUser);
-            console.log(`response1: ${response}`);
-        } else {
-            response = await patchFile(patchData);
-            console.log(`response2: ${response}`);
-        }
-
-        const data = await response.data;
-
-        if (response.status === 200) {
-            setFiles(data);
-            setForm();
+        try {
+            let response;
+            if (currentStorageUser) {
+                console.log(111);
+                response = await patchFile(patchData, currentStorageUser);
+                console.log(`response111: ${response}`);
+            } else {
+                console.log(222);
+                response = await patchFile(patchData);
+                console.log(`response222: ${response}`);
+            }
+            const data = await response.data;
+            console.log(333);
+            window.location.reload();
+            if (response.status === 200) {
+                setFiles(data);
+                setForm();
+            }
+        } catch (error) {
+            console.error("Ошибка при выполнении patchFile:", error.response ? error.response.data : error.message);
         }
     };
 

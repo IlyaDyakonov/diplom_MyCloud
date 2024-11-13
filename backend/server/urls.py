@@ -18,8 +18,16 @@ urlpatterns = [
     # path('api/detail_users_list/', get_detail_user_list),
     # path('api/delete_user/<int:user_id>/', delete_user),
     # path('files/', FileViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('files/<int:pk>/', FileViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy', 'patch': 'update'}), name='file-detail'),
-    path('files/<folder_name>/', FileViewSet.as_view({'get': 'list', 'post': 'create'}), name='file-list'),
+    path('files/<int:pk>/', FileViewSet.as_view({
+        'get': 'retrieve',
+        'post': 'create',
+        'delete': 'destroy',
+        'patch': 'update'
+        }), name='file-detail'),
+    path('files/<folder_name>/', FileViewSet.as_view({
+        'get': 'list',
+        'post': 'create'
+        }), name='file-list'),
     path('link/', get_link),
     path('link/<str:link>/', get_file),
 	# path('files/<folder_name>/<int:pk>', FileViewSet.as_view({'patch': 'update', 'delete': 'destroy'}), name='file-detail'),

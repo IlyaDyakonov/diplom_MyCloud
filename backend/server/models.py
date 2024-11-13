@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 
-allowed_extensions = ['tiff', 'jpg', 'png', 'jpeg', 'pdf', 'doc', 'docx', 'gif']
+allowed_extensions = ['tiff', 'jpg', 'png', 'jpeg', 'pdf', 'doc', 'docx', 'gif', 'exe']
 
 class User(AbstractUser):
     username = models.CharField(verbose_name='Логин', max_length=30, unique=True) # логин пользователя
@@ -92,31 +92,59 @@ class File(models.Model):
         print(f"код вызвался, путь: {path}, имя файла: {file_name}")
         return path, file_name
 
-
     def save(self, *args, **kwargs):
         print(f'Запуск метода save для {self.file_name}')
+        
+        # Проверка, вызывается ли сохранение при обновлении файла
+        if not self.pk:  # если это новое создание записи
+            # Генерация уникального идентификатора
+            if not self.unique_id:
+                self.unique_id = uuid4().hex
+            print(f"self.pk1111111: {self.pk}")
+            # Проверка расширения файла
+            if not Path(self.file_name).suffix:
+                extension = os.path.splitext(self.file.name)[1]
+                self.file_name = f"{self.file_name}{extension}"
 
-        # Генерация уникального идентификатора, если его нет
-        if not self.unique_id:
-            self.unique_id = uuid4().hex
+            # Установка пути и имени файла
+            self.path, unique_file_name = self.created_path_and_file_name(self.user.id, self.file_name)
+            self.file.name = unique_file_name  # Уникальное имя файла
+            print(f'Полный путь для сохранения: {self.path}')
+        else:
+            print(f"self.pk22222222: {self.__dict__}")
+            # Если это обновление записи, путь и имя файла не меняются
+            print(f'Обновление записи без изменения пути и имени файла.')
 
-        # Проверка расширения файла
-        if not Path(self.file_name).suffix:
-            extension = os.path.splitext(self.file.name)[1]
-            self.file_name = f"{self.file_name}{extension}"
-
-        # Создаем относительный путь для сохранения файла (без дублирования `uploads`)
-        # self.path, unique_file_name = self.created_path_and_file_name(self.user.id, self.file_name)
-        # print(f'Полный путь для unique_file_name: {unique_file_name}')
-        print(f'self.file_name: {self.file_name}')
-
-        self.file.name = self.file_name
-        print(f'Полный путь для сохранения: {self.path}')
-        print(f'Файл для записи: {self.file.name}')
-
+        # Вызов оригинального метода `save` для завершения сохранения
         try:
             super().save(*args, **kwargs)
             print(f'Файл {self.file.name} успешно сохранен.')
-
         except Exception as e:
             print(f'Ошибка при сохранении файла: {e}')
+    # def save(self, *args, **kwargs):
+    #     print(f'Запуск метода save для {self.file_name}')
+
+    #     # Генерация уникального идентификатора, если его нет
+    #     if not self.unique_id:
+    #         self.unique_id = uuid4().hex
+
+    #     # Проверка расширения файла
+    #     if not Path(self.file_name).suffix:
+    #         extension = os.path.splitext(self.file.name)[1]
+    #         self.file_name = f"{self.file_name}{extension}"
+
+    #     # Создаем относительный путь для сохранения файла (без дублирования `uploads`)
+    #     # self.path, unique_file_name = self.created_path_and_file_name(self.user.id, self.file_name)
+    #     # print(f'Полный путь для unique_file_name: {unique_file_name}')
+    #     print(f'self.file_name: {self.file_name}')
+    #     # ПОНЯТЬ ПОЧЕМУ ТУТ ОН МЕНЯЕТ ПУТЬ ПРИ СОХРАНЕНИИ
+    #     self.file.name = self.file_name
+    #     print(f'Полный путь для сохранения: {self.path}')
+    #     print(f'Файл для записи: {self.file.name}')
+
+    #     try:
+    #         super().save(*args, **kwargs)
+    #         print(f'Файл {self.file.name} успешно сохранен.')
+
+    #     except Exception as e:
+    #         print(f'Ошибка при сохранении файла: {e}')

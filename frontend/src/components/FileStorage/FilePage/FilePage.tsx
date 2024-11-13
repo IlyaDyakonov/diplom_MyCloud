@@ -28,7 +28,7 @@ function FilePage() {
         }
         const fetchData = async () => {
             let response;
-
+            
             if (!currentStorageUser) {
                 console.log(`Запрос на получения списка файлов отправлен! 1: ${currentStorageUser}`)
                 response = await getUserFiles(currentStorageUser);
@@ -37,6 +37,7 @@ function FilePage() {
             } else {
                 console.log(`Запрос на получения списка файлов отправлен! 2: ${currentStorageUser}`)
                 response = await getAllFiles();
+                // console.log('Запрос response:', response)
             }
             const data = response.data;
             // console.log('Запрос:', data)
@@ -46,7 +47,6 @@ function FilePage() {
     }, [currentStorageUser, userId])
 
     const loginUser = useSelector((state: RootState) => state.users.loginUser); // loginUser.name: apuox
-    // console.log(loginUser.username);
 
     const sendFile = async (file: File) => {
         const formData = new FormData();
@@ -65,6 +65,7 @@ function FilePage() {
             console.log(`formData: ${formData}`);
             // const data = await response.data;
             setFiles(response.data);
+            window.location.reload();
         } catch (error) {
             console.error('Error uploading file:', error);
         }
@@ -78,6 +79,7 @@ function FilePage() {
                     fileList={files}
                     setCurrentFile={setCurrentFile}
                     currentFile={currentFile}
+                    currentUser={loginUser.id}
                 />
                 { currentFile
                     && (

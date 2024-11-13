@@ -153,7 +153,6 @@ class FileViewSet(viewsets.ModelViewSet):
     serializer_class = FileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
     # получение списка папок
     def list(self, request, folder_name=None, *args, **kwargs):
         user_id = request.query_params.get('user_id')
@@ -215,11 +214,28 @@ class FileViewSet(viewsets.ModelViewSet):
         return Response(data)
 
 
-    def update(self, request, pk=None, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
+        print(f"request: {request.data}")
+        print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        pk = kwargs.get('pk')
         file_instance = self.queryset.filter(user=request.user, pk=pk).first()
+
         if not file_instance:
+            print('файл не найден.')
             return Response({"message": "Файл не найден"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = FileSerializer(file_instance, data=request.data, partial=True)
+
+        print(f"request.data: {request.user}")
+        print(f"file_instance: {file_instance.__dict__}")
+
+        request_data = request.data.copy()  # Создаем копию данных запроса
+        request_data['user_id'] = file_instance.user_id
+        request_data['upload_date'] = file_instance.upload_date
+        request_data['last_download_date'] = file_instance.last_download_date
+        request_data['size'] = file_instance.size
+        request_data['path'] = file_instance.path
+        request_data['unique_id'] = file_instance.unique_id
+        print(f"request_data: {request_data}")
+        serializer = FileSerializer(file_instance, data=request_data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

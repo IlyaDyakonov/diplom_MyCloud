@@ -260,21 +260,28 @@ export function getDownloadLink(id: number) {
 }
 
 // переименование файла и изменение коммента
-export function patchFile(
-    id: number, data: any, userStorageId: number | null = null
-) {
+export function patchFile(data: any, userStorageId: number | null = null) {
     const token = localStorage.getItem("token");
-    let params = '';
-    console.log(`userStorageId: ${userStorageId}`)
-    console.log(`data.id: ${data.id}`)
-    console.log(`data.comment: ${data.comment}`)
 
-    if (userStorageId) {
-        params = userStorageId ? `?user_storage_id=${userStorageId}` : '';
-    }
+    const params = userStorageId ? `?user_storage_id=${userStorageId}` : '';
+    const patchUrl = `${BASE_URL}/files/${data.id}/${params}`;
+    
+    console.log("Отправляемые данные в patchFile:", {
+        comment: data.comment,
+        file_name: data.file_name,
+        user_id: data.user_id
+    });
+    console.log(`data: ${JSON.stringify(data, null, 2)}`)
 
-    return axios.patch(`${BASE_URL}/files/${id}/${params}`, data, {
+    const payload = {
+        comment: data.comment,
+        file_name: data.file_name,
+        user_id: data.user_id
+    };
+    console.log(`тут где то упал`)
+    return axios.patch(patchUrl, payload, {
         headers: {
+            
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken') || '',
             'Authorization': `Token ${token}`,
@@ -290,6 +297,9 @@ export function deleteFile(id: number, userStorageId: number | null = null) {
     // Формируем URL в стиле RESTful для DELETE-запроса
     const params = userStorageId ? `?user_storage_id=${userStorageId}` : '';
     const fullUrl = `${BASE_URL}/files/${id}/${params}`;
+    console.log(`id файла: ${id}`);
+    console.log(`params: ${params}`);
+    console.log(`userStorageId: ${userStorageId}`);
     console.log(`Deleting file at: ${fullUrl}`);  // Логирование URL для отладки
 
     return axios.delete(fullUrl, {
