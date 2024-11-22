@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { deleteUser, patchUser } from "../../../api/api";
 import IsStaffBtn from "./IsStaffBtn";
-import ToStorageBtn from "./ToStorageBtn";
+import ToFolderBtn from "./ToFolderBtn";
 import { UserTypeAdminPanel } from "../../../models";
 
 
 const User: React.FC<UserTypeAdminPanel> = ({
-    id, username, first_name, last_name, email, isStaff, removeItem
+    id, username, email, numOfFiles, size, isStaff, removeItem,
 }) => {
     const prefix = import.meta.env.BUILD_PREFIX || '';
     const [ sendRequest, setSendRequest ] = useState<"DELETE" | "PATCH" | "">("");
@@ -43,15 +43,16 @@ const User: React.FC<UserTypeAdminPanel> = ({
     return (
     <tr key={id}>
         <td>{ username }</td>
-        <td>{ first_name }</td>
-        <td>{ last_name }</td>
+        {/* <td>{ first_name }</td>
+        <td>{ last_name }</td> */}
         <td>{ email }</td>
-        <td>{ folder_name }</td>
+        <td>{ numOfFiles }</td>
+        <td>{ size }</td>
         <td>
             <IsStaffBtn isStaff={_isStaff} setIsStaff={_setIsStaff} onClickHandler={onClickHandler} />
         </td>
         <td>
-            <ToStorageBtn userId={id} />
+            <ToFolderBtn userId={id} />
         </td>
         <td>
             <button onClick={() => onClickHandler('DELETE')} onKeyDown={() => onClickHandler('DELETE')} type="button" aria-label="Delete">

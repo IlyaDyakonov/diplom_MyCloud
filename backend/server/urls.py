@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
-from .views import UserViewSet, FileViewSet, get_file, get_link, user_login, user_logout
+from .views import UserViewSet, FileViewSet, get_file, get_link, user_login, user_logout, get_detail_user_list, delete_user
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -30,7 +30,9 @@ urlpatterns = [
         }), name='file-list'),
     path('link/', get_link),
     path('link/<str:link>/', get_file),
-	# path('files/<folder_name>/<int:pk>', FileViewSet.as_view({'patch': 'update', 'delete': 'destroy'}), name='file-detail'),
+    path('admin', get_detail_user_list),
+    path('detail_users_list/', get_detail_user_list),
+    path('delete_user/<int:user_id>/', delete_user),
 	# path('download/<unique_id>/', FileViewSet.as_view({'get': 'download'}), name='file-download'),
     path('', include(router.urls)),
 ] + router.urls

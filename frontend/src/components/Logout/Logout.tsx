@@ -13,10 +13,11 @@ const Logout: React.FC = () => {
 
     const handleLogout = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-        // dispatch(logoutSuccess(loginUser.username));
-        dispatch(logoutSuccess());
-        logOut(loginUser.username);
-        navigate('/');
+        if (loginUser) { // Проверка на null
+            dispatch(logoutSuccess());
+            logOut(loginUser.username);
+            navigate('/');
+        }
     }
 
     return (

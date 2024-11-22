@@ -111,12 +111,16 @@ export async function logOut(username: string) {
     }
 }
 
+// ____________________________________________________________________________________________________
+// АДМИН ПАНЕЛЬ!
 
 export async function getUserList() {
     try {
+        const token = localStorage.getItem("token");
         const response = await axios.get(`${BASE_URL}/detail_users_list/`, {
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Token ${token}`,
             },
         });
         if (response.status !== 200) {
@@ -161,6 +165,9 @@ export async function patchUser(id: number, isStaff: boolean) {
         console.error('Error:', error);
     }
 }
+
+// ____________________________________________________________________________________________________
+// РАБОТА С ФАЙЛАМИ!
 
 // запрос на получение файлов ВСЕХ пользователей
 export async function getAllFiles() {
@@ -233,20 +240,20 @@ export async function createFile(data: FormData) {
 }
 
 // Получение ссылок на загрузку файла
-export function downloadFile(id: number) {
-    try {
-        const token = localStorage.getItem("token");
-        return axios.get(`${BASE_URL}/link/${id}/`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${token}`,
-            },
-        });
-    } catch (error) {
-        console.error('Error occurred during file download:', error);
-        throw error;
-    }
-}
+// export function downloadFile(id: number) {
+//     try {
+//         const token = localStorage.getItem("token");
+//         return axios.get(`${BASE_URL}/link/${id}/`, {
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'Authorization': `Token ${token}`,
+//             },
+//         });
+//     } catch (error) {
+//         console.error('Error occurred during file download:', error);
+//         throw error;
+//     }
+// }
 
 export function getDownloadLink(id: number) {
     const token = localStorage.getItem("token");
@@ -260,17 +267,13 @@ export function getDownloadLink(id: number) {
 }
 
 // переименование файла и изменение коммента
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function patchFile(data: any, userStorageId: number | null = null) {
     const token = localStorage.getItem("token");
 
     const params = userStorageId ? `?user_storage_id=${userStorageId}` : '';
     const patchUrl = `${BASE_URL}/files/${data.id}/${params}`;
-    
-    console.log("Отправляемые данные в patchFile:", {
-        comment: data.comment,
-        file_name: data.file_name,
-        user_id: data.user_id
-    });
+
     console.log(`data: ${JSON.stringify(data, null, 2)}`)
 
     const payload = {
@@ -278,14 +281,13 @@ export function patchFile(data: any, userStorageId: number | null = null) {
         file_name: data.file_name,
         user_id: data.user_id
     };
-    console.log(`тут где то упал`)
+
     return axios.patch(patchUrl, payload, {
         headers: {
             
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken') || '',
             'Authorization': `Token ${token}`,
-            // cookie: `sessionid=${Cookies.get('sessionid')}`,
         },
     });
 }

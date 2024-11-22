@@ -90,3 +90,7 @@ form p {
 .login a:visited {
     color: #1da1f2; /* Цвет ссылки после клика */
 }
+
+.error-message {
+    color: red; /* Цвет текста для сообщений об ошибках */
+}

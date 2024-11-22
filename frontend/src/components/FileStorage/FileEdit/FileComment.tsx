@@ -1,24 +1,24 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-// import PropTypes from 'prop-types';
+import React, { useEffect, useRef, useState } from 'react';
 import { patchFile } from '../../../api/api';
-// import GlobalStateContext from '../FilePage/state.ts';
 import { FileCommentProps } from '../../../models';
 import './FileForm.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/index.ts';
+import axios from 'axios';
 
 
 const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFiles }) => {
     const prefix = import.meta.env.BUILD_PREFIX || '';
     const newComment = useRef<HTMLTextAreaElement>(null);
     // const { currentStorageUser } = useContext(GlobalStateContext);
-    const userId = useSelector((state: RootState) => state.users.loginUser.id);
+    const loginUser = useSelector((state: RootState) => state.users.loginUser);
+    const userId = loginUser ? loginUser.id : 0; // Если loginUser null, устанавливаем userId в 0
     const [currentStorageUser, setCurrentStorageUser] = useState<number>(userId || 0); // Устанавливаем ID текущего пользователя
 
 
     useEffect(() => {
         if (newComment.current) {
-            newComment.current.value = currentFile.comment;
+            newComment.current.value = currentFile.comment || '';
         }
     }, [currentFile.comment]);
 
@@ -30,9 +30,7 @@ const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFile
         if (userId) {
             setCurrentStorageUser(userId);
         }
-        // const patchData = currentFile;
-        // patchData.comment = newComment.current.value;
-        // const patchData = { ...currentFile, comment: newComment.current.value };
+
         const patchData = {
             ...currentFile,
             comment: newComment.current?.value || '',
@@ -59,9 +57,17 @@ const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFile
                 setFiles(data);
                 setForm();
             }
-        } catch (error) {
-            console.error("Ошибка при выполнении patchFile:", error.response ? error.response.data : error.message);
-        }
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                // Обработка ошибок Axios
+                console.error("Ошибка при выполнении patchFile:", error.response?.data || error.message);
+            } else if (error instanceof Error) {
+                // Обработка стандартных ошибок JavaScript
+                console.error("Ошибка при выполнении patchFile:", error.message);
+            } else {
+                // Неизвестный тип ошибки
+                console.error("Неизвестная ошибка:", error);
+            }}
     };
 
     const onCloseHandler = () => {
@@ -71,7 +77,7 @@ const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFile
     return (
         <form className="form" onSubmit={onSubmitHandler}>
             <h2 className="form-title">Изм. комментарий</h2>
-            <textarea type="text" placeholder="Новый комментарий" ref={newComment} />
+            <textarea placeholder="Новый комментарий" ref={newComment} />
             <input type="submit" value="OK" required />
             <button
                 className="close"

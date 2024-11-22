@@ -1,10 +1,14 @@
 import FileList from '../FileList/FileList';
 import { createFile, getAllFiles, getUserFiles } from '../../../api/api';
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import FileAdd from '../FileEdit/FileAdd';
 import { RootState } from "../../../store";
 import { useSelector } from "react-redux";
 import FileEditPanel from '../FileEdit/FileEditPanel';
+import { FileElement, FileType } from '../../../models';
+import { NavLink } from 'react-router-dom';
+import "../FileList/FileList.css"
+import { useFetchCheckUserStatus } from '../../../slices/useFetchCheckUserStatus';
 
 
 const FileContext = createContext<{
@@ -12,43 +16,49 @@ const FileContext = createContext<{
     setCurrentStorageUser: (userId: number) => void;
 }>({
     currentStorageUser: 0,
-    setCurrentStorageUser: () => {},
+    setCurrentStorageUser: () => { },
 });
 
+
 function FilePage() {
-    const [ currentFile, setCurrentFile ] = useState<File | null>(null);
-    const [ files, setFiles ] = useState<any[]>([]);
+    const loginUser = useFetchCheckUserStatus();
+    const [currentFile, setCurrentFile] = useState<File | null>(null);
+    const [files, setFiles] = useState<FileType[]>([]);
     // const [ currentStorageUser, setCurrentStorageUser ] = useState<number>(0);
-    const userId = useSelector((state: RootState) => state.users.loginUser.id);
-    const [currentStorageUser, setCurrentStorageUser] = useState<number>(userId || 0); // Устанавливаем ID текущего пользователя
+    const userId = useSelector((state: RootState) => state.users.loginUser?.id ?? 0);
+    const [currentStorageUser, setCurrentStorageUser] = useState<number>(userId); // Устанавливаем ID текущего пользователя
+    const userI = window.sharedUserId || 0;
+
 
     useEffect(() => {
         if (userId) {
             setCurrentStorageUser(userId);
         }
+        let response;
         const fetchData = async () => {
-            let response;
-            
-            if (!currentStorageUser) {
-                console.log(`Запрос на получения списка файлов отправлен! 1: ${currentStorageUser}`)
-                response = await getUserFiles(currentStorageUser);
-                // response = await getAllFiles();
-            // }
+            if (userI !== 0) {
+                console.log(`1111111111111111111111: ${userI}`);
+                response = await getUserFiles(userI);
+                window.sharedUserId = 0;
             } else {
-                console.log(`Запрос на получения списка файлов отправлен! 2: ${currentStorageUser}`)
-                response = await getAllFiles();
-                // console.log('Запрос response:', response)
+                console.log(`2222222222222222222222: ${userI}`);
+                response = await getUserFiles(userId);
             }
+            //   const data = response.data;
+            //   setFiles(data);
+            // const response = await getAllFiles();
             const data = response.data;
-            // console.log('Запрос:', data)
             setFiles(data);
         }
         fetchData();
     }, [currentStorageUser, userId])
 
-    const loginUser = useSelector((state: RootState) => state.users.loginUser); // loginUser.name: apuox
-
     const sendFile = async (file: File) => {
+        if (!loginUser) {
+            console.error("Ошибка: пользователь не авторизован.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('file_name', file.name);
@@ -70,18 +80,17 @@ function FilePage() {
             console.error('Error uploading file:', error);
         }
     };
-    // console.error('currentFilecurrentFilecurrentFilecurrentFile:', currentFile);
-    
+
     return (
         <FileContext.Provider value={{ currentStorageUser, setCurrentStorageUser }}>
             <>
                 <FileList
                     fileList={files}
-                    setCurrentFile={setCurrentFile}
+                    setCurrentFile={(file: FileElement | null) => setCurrentFile(file as File | null)}
                     currentFile={currentFile}
                     currentUser={loginUser.id}
                 />
-                { currentFile
+                {currentFile
                     && (
                         <FileEditPanel
                             currentFile={currentFile}
@@ -89,6 +98,16 @@ function FilePage() {
                             setCurrentFile={setCurrentFile}
                         />
                     )}
+                {/* { loginUser?.is_staff && loginUser?.is_superuser ? ( */}
+                {loginUser?.is_superuser ? (
+                    <p className="thanks">
+                        <NavLink to="/admin" className={'crud-menu__item'}>Войти</NavLink>
+                        в админ панель!
+                    </p>
+                ) : (
+                    <div className='thanks'>Спасибо что пользуетесь нашим сервисом! 💻</div>
+                )
+                }
                 <FileAdd sendFile={sendFile} />
 
             </>

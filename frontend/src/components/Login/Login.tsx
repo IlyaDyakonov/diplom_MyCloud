@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import './Login.css';
 import React, { useEffect, useState } from "react";
-// import { useLoginActionMutation  } from '../../api/api';
 import { NavLink, useNavigate } from "react-router-dom";
 import { PasswordInput } from "../../elements/PasswordValidate";
 import { useDispatch } from "react-redux";
 import getError from "../../elements/GetError";
-// import {setActiveState, setLoginUser} from "../../../../slices/usersSlice";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { SerializedError } from "@reduxjs/toolkit";
 import { logIn } from '../../api/api';
@@ -22,7 +19,6 @@ const Login: React.FC = () => {
 	const [ errorMessage, setErrorMessage ] = useState<string>('');
 	const [ memory, setMemory ] = useState<boolean>(false);
 	const [ isLoading, setIsLoading ] = useState<boolean>(false);
-	// const [login, { isLoading, error }] = useLoginActionMutation();
 
 	// загрузка из локального хранилища
 	useEffect(() => {

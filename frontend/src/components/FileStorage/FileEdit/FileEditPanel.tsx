@@ -4,7 +4,7 @@ import FileRename from './FileRename';
 import FileDelete from './FileDelete';
 import FileGetLink from './FileGetLink';
 import FileComment from './FileComment';
-import { downloadFile, getDownloadLink, BASE_URL } from '../../../api/api';
+import { getDownloadLink, BASE_URL } from '../../../api/api';
 import { FileEditPanelProps } from '../../../models';
 import './FileEditPanel.css';
 
@@ -17,6 +17,10 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
         if (action === 'download') {
             const downloadFileHandler = async () => {
                 try {
+                    if (!currentFile?.id || !currentFile?.file_name) {
+                        console.error("Файл или его идентификатор отсутствуют.");
+                        return;
+                    }
                     // Получаем ссылку для скачивания
                     const response = await getDownloadLink(currentFile.id);
                     const data = response.data;
@@ -41,6 +45,10 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
         if (action === 'getLink') {
             const getLink = async () => {
                 try {
+                    if (!currentFile?.id) {
+                        console.error("Идентификатор файла отсутствует.");
+                        return;
+                    }
                     const response = await getDownloadLink(currentFile.id);
                     const data = response.data;
                     const link = `${BASE_URL}/link/${data.link}/`;
@@ -70,7 +78,7 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
                 ? (
                     <FileRename
                         currentFile={currentFile}
-                        setForm={setPatchForm}
+                        setForm={() => setPatchForm(undefined)}
                         setFiles={setFiles}
                     />
                 )
@@ -79,7 +87,7 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
                 ? (
                     <FileComment
                         currentFile={currentFile}
-                        setForm={setPatchForm}
+                        setForm={() => setPatchForm(undefined)}
                         setFiles={setFiles}
                     />
                 )
@@ -88,7 +96,7 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
                 ? (
                     <FileDelete
                         currentFile={currentFile}
-                        setForm={setPatchForm}
+                        setForm={() => setPatchForm(undefined)}
                         setFiles={setFiles}
                         setCurrentFile={setCurrentFile}
                     />
@@ -98,7 +106,7 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
                 ? (
                     <FileGetLink
                         link={downloadLink}
-                        setForm={setPatchForm}
+                        setForm={() => setPatchForm(undefined)}
                     />
                 )
                 : null}

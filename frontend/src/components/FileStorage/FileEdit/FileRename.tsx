@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './FileForm.css';
 import { patchFile } from '../../../api/api';
 import { FileRenameProps } from '../../../models';
@@ -9,7 +9,7 @@ import { RootState } from '../../../store/index.ts';
 const FileRename: React.FC<FileRenameProps> = ({ currentFile, setForm, setFiles }) => {
     const prefix = import.meta.env.BUILD_PREFIX || '';
     const newFileName = useRef<HTMLInputElement>(null);
-    const userId = useSelector((state: RootState) => state.users.loginUser.id);
+    const userId = useSelector((state: RootState) => state.users.loginUser?.id || 0);
     const [currentStorageUser, setCurrentStorageUser] = useState<number>(userId || 0); // Устанавливаем ID текущего пользователя
 
     const [baseName, setBaseName] = useState('');
@@ -17,7 +17,7 @@ const FileRename: React.FC<FileRenameProps> = ({ currentFile, setForm, setFiles 
 
     useEffect(() => {
         // Разделяем имя файла и его расширение при монтировании
-        const fileParts = currentFile.file_name.split('.');
+        const fileParts = (currentFile.file_name as string).split('.');
         const extension = fileParts.pop();
         setBaseName(fileParts.join('.'));
         setFileExtension(extension ? `.${extension}` : '');

@@ -2,21 +2,15 @@ import './SignUp.css';
 import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { PasswordValidation } from "../../elements/PasswordValidate.tsx";
-// import { useCreateUserMutation } from "../../api/api.ts";
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-// import { useDispatch } from "react-redux";
-// import { AppDispatch } from "../../store/index.ts";
-// import { setActiveState } from "../../slices/usersSlice.ts";
 import useLoginValidation from '../../elements/LoginValidate.tsx';
 import { signUp } from "../../api/api.ts";
 
 
 const SignUp = () => {
-	// const dispatch = useDispatch<AppDispatch>();
-	// const [createUser] = useCreateUserMutation();
+
 	const navigate = useNavigate();
 
-	// const [ username, setUsername ] = useState<string>("");
 	const [ email, setEmail ] = useState<string>('');
 	const [ password, setPassword ] = useState<string>('');
 	const [ confirmPassword, setConfirmPassword ] = useState<string>('');
@@ -52,7 +46,6 @@ const SignUp = () => {
 				}
 			} else {
 				console.log('User created successfully', result.data);
-				// dispatch(setActiveState('login'));
 				navigate('/login');
 			}
 		} catch (err) {

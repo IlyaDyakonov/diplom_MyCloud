@@ -18,7 +18,7 @@ const getError = (error: FetchBaseQueryError | SerializedError | undefined): str
             return error.message || 'Произошла неизвестная ошибка';
         }
     }
-    // Undefined
+
     return '';
 }
 

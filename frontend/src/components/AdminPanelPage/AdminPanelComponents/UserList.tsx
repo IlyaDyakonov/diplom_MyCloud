@@ -4,15 +4,18 @@ import User from "./User";
 import { UserTypeAdminPanel } from "../../../models";
 
 
-function UserList() {
+function UsersList() {
     const [renderedData, setRenderedData] = useState<UserTypeAdminPanel[] | null>(null);;
 
     useEffect(() => {
         const fetchData = async () => {
             const response = await getUserList();
             const data = response;
+            // console.log(`data: ${data}`)
+            // console.log(`data: ${JSON.stringify(data, null, 2)}`);
             if (response !== null) {
                 setRenderedData(data);
+                
             }
         };
 
@@ -20,6 +23,7 @@ function UserList() {
     }, []);
 
     const removeItem = (id: number) => {
+        if (!renderedData) return;
         const newRenderedData = renderedData.filter((item) => item.id !== id);
         setRenderedData(newRenderedData);
     };
@@ -29,11 +33,12 @@ function UserList() {
             <thead>
                 <tr>
                     <td>Username</td>
-                    <td>First name</td>
-                    <td>Last name</td>
                     <td>Email</td>
-                    <td>Folder name</td>
+                    <th>Number of files</th>
+                    <th>Total file size (mb)</th>
                     <td>Is admin</td>
+                    <td>To folder user</td>
+                    <td>del user</td>
                 </tr>
             </thead>
             <tbody>
@@ -44,10 +49,10 @@ function UserList() {
                             key={user.id}
                             id={user.id}
                             username={user.username}
-                            first_name={user.first_name}
-                            last_name={user.last_name}
                             email={user.email}
-                            is_staff={user.is_staff}
+                            numOfFiles={user.count}
+                            size={(user.size * 9.537 * 10 ** -7).toFixed(2)}
+                            isStaff={user.is_staff}
                             removeItem={removeItem}
                         />
                     ))
@@ -58,6 +63,4 @@ function UserList() {
     )
 }
 
-export default UserList;
-
-
+export default UsersList;

@@ -4,7 +4,6 @@ import './FileAdd.css';
 import { FileAddProps } from "../../../models";
 
 
-// РАЗОБРАТЬСЯ ВОТ ТУТ С КОНТЕКСТОМ И ID ПОЛЬЗОВАТЕЛЯ КОТОРОЕ ПЕРЕДАЁМ
 const FileContext = createContext<{
     currentStorageUser: number;
     setCurrentStorageUser: (userId: number) => void;
@@ -32,11 +31,17 @@ function FileAdd({ sendFile }: FileAddProps) {
 
         // Проверка, что файл выбран
         if (fileChosen && fileChosen.length > 0) {
-            sendFile(fileChosen.item(0)); // Передача выбранного файла через функцию отправки
-            setFileChosen(null); // Очищаем выбранный файл после отправки
-            if (file.current) { // Сбрасываем значение input
-                file.current.value = '';
+            const selectedFile = fileChosen.item(0);
+            if (selectedFile) {
+                sendFile(selectedFile); // Передача выбранного файла через функцию отправки
+                setFileChosen(null); // Очищаем выбранный файл после отправки
+                if (file.current) { // Сбрасываем значение input
+                    file.current.value = '';
+                }
+            } else {
+                console.error("Selected file is null");
             }
+
         } else {
             console.error("No file chosen"); // Логируем ошибку, если файл не выбран
         }

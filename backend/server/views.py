@@ -10,17 +10,17 @@ from django.middleware.csrf import get_token
 from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.forms import AuthenticationForm
+from django.db.models import Sum, Count
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework import permissions, viewsets, status
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import User, File
 from .serializers import UserSerializer, FileSerializer
-from datetime import date
-
+from datetime import date 
 import json
 
 
@@ -64,7 +64,50 @@ class UserViewSet(viewsets.ModelViewSet):
             'token': token.key,
         }
         return JsonResponse(response_data, status=status.HTTP_201_CREATED)
+    
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def get_detail_user_list(request):
+    if not request.user.is_staff:
+        return Response({"detail": "You do not have permission to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+    result = User.objects.annotate(size=Sum('file__size'), count=Count('file__id')).values(
+        'id', 'username', 'first_name', 'last_name', 'email', 'count', 'size', 'is_staff')
+    if result:
+        return Response(result, status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_404_NOT_FOUND)
 
+# @api_view(['GET'])
+# @permission_classes([IsAdminUser])
+# def get_detail_user_list(request):
+#     try:
+#         result = User.objects.annotate(
+#             size=Sum('filemodel__size'),
+#             count=Count('filemodel__id')
+#         ).values(
+#             'id', 'username', 'first_name', 'last_name', 'email', 'count', 'size', 'is_staff'
+#         )
+#         if result:
+#             return Response(result, status=status.HTTP_200_OK)
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def delete_user(request, user_id):
+    user = User.objects.get(id=user_id)
+
+    if user:
+        user.delete()
+
+        return JsonResponse({
+            "message": "success",
+        })
+    
+    return JsonResponse({
+        "message": 'Пользователь не найден',
+    }, status=404)
 
 @csrf_exempt
 def user_login(request):

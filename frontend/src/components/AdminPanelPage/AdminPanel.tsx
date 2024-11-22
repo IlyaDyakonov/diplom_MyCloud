@@ -1,16 +1,17 @@
-import React, { useContext } from 'react';
-import UsersList from '../../components/AdminPanelPageComponents/UsersList';
+import React from 'react';
 import './AdminPanel.css';
-import Context from '../../../GlobalState/state';
+import UsersList from './AdminPanelComponents/UserList';
+import { useFetchCheckUserStatus } from '../../slices/useFetchCheckUserStatus';
 
 
 function AdminPanel() {
-    const { isAdmin } = useContext(Context);
+    const loginUser = useFetchCheckUserStatus();
+    const isAdmin = loginUser?.is_superuser;
 
     if (!isAdmin) {
         return (
             <div className="admin-panel--access-denied">
-                <span className="content">У вас нет прав на просмотр администраторской панели</span>
+                <span className="content">У вас нет прав на просмотр админ панели</span>
             </div>
         );
     }
