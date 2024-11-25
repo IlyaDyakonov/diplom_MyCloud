@@ -178,8 +178,10 @@ export interface UserTypeAdminPanel {
     email: string;
     is_staff?: boolean;
     isStaff?: boolean;
-    numOfFiles: number;
-    size: string;
+    isSuperUser?: boolean;
+    numOfFiles?: number;
+    size: number;
+    count?: number;
     removeItem?: (id: number) => void;
 }
 
@@ -190,6 +192,8 @@ export interface ToFolderBtnProps {
 
 export interface IsStaffBtnProps {
     isStaff: boolean;
-    onClickHandler: (method: string) => void;
+    isSuperUser: boolean;
+    onClickHandler: (method: "DELETE" | "PATCH") => void;
     setIsStaff: (value: boolean) => void;
+    setIsSuperUser: (value: boolean) => void;
 }

@@ -8,7 +8,7 @@ import AdminPanel from "./AdminPanelPage/AdminPanel";
 
 
 /**
- * главный компомент с навигацией по сайту
+ * Главный компомент с навигацией по сайту
  */
 function CRUD() {
     return (

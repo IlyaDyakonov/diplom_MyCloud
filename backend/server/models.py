@@ -41,11 +41,7 @@ def _create_directory_path(instance, filename):
     user_name = filename
     print(f'Создаем user_name: {user_name}')
     print(f'Создаем user_folder: {user_folder}')
-    
-    # Относительный путь для сохранения файла (без лишнего "uploads")
-    # relative_path = os.path.join(user_folder)  # Теперь просто "user_folder"
-    # print(f'Создаем директорию relative_path: {relative_path}')
-    # Полный путь внутри MEDIA_ROOT (с "uploads")
+
     full_path = os.path.join(settings.MEDIA_ROOT, user_folder)  # "uploads" добавляется здесь
     os.makedirs(full_path, exist_ok=True)
 
@@ -96,7 +92,7 @@ class File(models.Model):
         print(f'Запуск метода save для {self.file_name}')
         
         # Проверка, вызывается ли сохранение при обновлении файла
-        if not self.pk:  # если это новое создание записи
+        if not self.pk:
             # Генерация уникального идентификатора
             if not self.unique_id:
                 self.unique_id = uuid4().hex
@@ -121,30 +117,3 @@ class File(models.Model):
             print(f'Файл {self.file.name} успешно сохранен.')
         except Exception as e:
             print(f'Ошибка при сохранении файла: {e}')
-    # def save(self, *args, **kwargs):
-    #     print(f'Запуск метода save для {self.file_name}')
-
-    #     # Генерация уникального идентификатора, если его нет
-    #     if not self.unique_id:
-    #         self.unique_id = uuid4().hex
-
-    #     # Проверка расширения файла
-    #     if not Path(self.file_name).suffix:
-    #         extension = os.path.splitext(self.file.name)[1]
-    #         self.file_name = f"{self.file_name}{extension}"
-
-    #     # Создаем относительный путь для сохранения файла (без дублирования `uploads`)
-    #     # self.path, unique_file_name = self.created_path_and_file_name(self.user.id, self.file_name)
-    #     # print(f'Полный путь для unique_file_name: {unique_file_name}')
-    #     print(f'self.file_name: {self.file_name}')
-    #     # ПОНЯТЬ ПОЧЕМУ ТУТ ОН МЕНЯЕТ ПУТЬ ПРИ СОХРАНЕНИИ
-    #     self.file.name = self.file_name
-    #     print(f'Полный путь для сохранения: {self.path}')
-    #     print(f'Файл для записи: {self.file.name}')
-
-    #     try:
-    #         super().save(*args, **kwargs)
-    #         print(f'Файл {self.file.name} успешно сохранен.')
-
-    #     except Exception as e:
-    #         print(f'Ошибка при сохранении файла: {e}')

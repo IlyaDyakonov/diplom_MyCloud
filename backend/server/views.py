@@ -10,13 +10,15 @@ from django.middleware.csrf import get_token
 from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.forms import AuthenticationForm
+from rest_framework.authentication import TokenAuthentication
+from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes, authentication_classes
 from rest_framework import permissions, viewsets, status
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import User, File
 from .serializers import UserSerializer, FileSerializer
@@ -75,23 +77,6 @@ def get_detail_user_list(request):
     if result:
         return Response(result, status=status.HTTP_200_OK)
     return Response(status=status.HTTP_404_NOT_FOUND)
-
-# @api_view(['GET'])
-# @permission_classes([IsAdminUser])
-# def get_detail_user_list(request):
-#     try:
-#         result = User.objects.annotate(
-#             size=Sum('filemodel__size'),
-#             count=Count('filemodel__id')
-#         ).values(
-#             'id', 'username', 'first_name', 'last_name', 'email', 'count', 'size', 'is_staff'
-#         )
-#         if result:
-#             return Response(result, status=status.HTTP_200_OK)
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-#     except Exception as e:
-#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 @api_view(['DELETE'])
 @permission_classes([IsAdminUser])
@@ -190,6 +175,41 @@ def user_logout(request):
     else:
         return JsonResponse({'message': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+@csrf_exempt
+def me_view(request, user_id):
+    # Получаем пользователя из базы данных
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+
+    # Проверяем метод запроса
+    if request.method == "PATCH":
+        # Парсим JSON-данные из тела запроса
+        data = JSONParser().parse(request)
+
+        # Обновляем значения is_staff и is_superuser, если они присутствуют в запросе
+        if "is_staff" in data:
+            user.is_staff = data["is_staff"]
+        if "is_superuser" in data:
+            user.is_superuser = data["is_superuser"]
+
+        # Сохраняем изменения в базе данных
+        user.save()
+        return JsonResponse({
+            "id": user.id,
+            "username": user.username,
+            "is_staff": user.is_staff,
+            "is_superuser": user.is_superuser,
+        }, status=200)
+
+    # Если запрос не PATCH, возвращаем текущие данные пользователя
+    return JsonResponse({
+        "id": user.id,
+        "username": user.username,
+        "is_staff": user.is_staff,
+        "is_superuser": user.is_superuser,
+    })
 
 class FileViewSet(viewsets.ModelViewSet):
     queryset = File.objects.all()
@@ -226,19 +246,17 @@ class FileViewSet(viewsets.ModelViewSet):
 
     # @action(detail=False, methods=['post'], parser_classes=[MultiPartParser, FormParser])
     def create (self, request, *args, **kwargs):
-        # serializer = FileSerializer(data=request.data)
-        # print(f"Файл получен: {request.FILES}")  # Проверьте, что файл действительно передаётся
         data = request.data.copy()
         file = request.FILES.get('file')
         print("Все файлы в запросе:", request.FILES)  # Логируем все файлы в запросе
         if file:
             data['file'] = file
-            print("Тип файла:", type(file))  # Должно быть <class 'django.core.files.uploadedfile.InMemoryUploadedFile'>
-            print("Размер файла:", file.size)  # Проверьте, что размер файла соответствует оригиналу
+            print("Тип файла:", type(file))
+            print("Размер файла:", file.size)
         print(f"Файл получен data: {data}")
         print(f"Файл получен file: {file}")
         print("Получен файл:", request.FILES.get('file'))
-        serializer = FileSerializer(data=data, context={'request': request})  # Передайте файлы для сохранения
+        serializer = FileSerializer(data=data, context={'request': request})
 
         if serializer.is_valid():
             file_instance = serializer.save(user=request.user)
@@ -292,7 +310,7 @@ class FileViewSet(viewsets.ModelViewSet):
         
         # Формируем полный путь к файлу
         # Здесь мы используем file_instance.file.name для получения имени файла
-        file_path = os.path.join(settings.MEDIA_ROOT, file_instance.file.name)  # Изменено: используем имя файла из поля file
+        file_path = os.path.join(settings.MEDIA_ROOT, file_instance.file.name)
         file_path = os.path.normpath(file_path)  # Нормализуем путь
         print(f'file_path: {file_path}')
         
@@ -308,7 +326,7 @@ class FileViewSet(viewsets.ModelViewSet):
 
         # Удаляем запись из базы данных
         file_instance.delete()
-        print(f"Файл {file_path} успешно удалён из хранилища.")  # Это сообщение теперь будет точным
+        print(f"Файл {file_path} успешно удалён из хранилища.")
         return Response({"message": "Файл успешно удален"}, status=status.HTTP_204_NO_CONTENT)
 
 

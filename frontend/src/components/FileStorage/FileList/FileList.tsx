@@ -5,7 +5,7 @@ import './FileList.css';
 
 
 const FileList: React.FC<FileListProps> = ({
-    fileList = [],  // Добавлено значение по умолчанию
+    fileList = [],
     currentFile,
     setCurrentFile,
     currentUser
@@ -14,8 +14,7 @@ const FileList: React.FC<FileListProps> = ({
     const [isLoaded, setIsLoaded] = useState(false);  // Флаг для отслеживания загрузки данных
 
     useEffect(() => {
-        // console.log("fileList:", fileList);
-        // if (fileList && fileList.length > 0) {
+
         if (Array.isArray(fileList) && fileList.length > 0) {  // Проверка, что fileList — массив
             const userList: string[] = fileList.map((element: FileElement) => element.user);
             const uniqUserList = Array.from(new Set(userList));
@@ -29,7 +28,6 @@ const FileList: React.FC<FileListProps> = ({
     const safeFileList = Array.isArray(fileList) ? fileList : [];
 
     if (!isLoaded) {
-    // if (!Array.isArray(fileList) || fileList.length === 0) {  // Дополнительная проверка
         return <div>No files available! =(</div>;
     }
 
@@ -73,7 +71,7 @@ const FileList: React.FC<FileListProps> = ({
                         last_download_date={file.last_download_date}
                         currentFile={currentFile}
                         setCurrentFile={setCurrentFile}
-                        isOtherUserFile={file.user_id !== currentUser} // Pass prop to indicate if file belongs to another user
+                        isOtherUserFile={file.user_id !== currentUser}
                     />
                 ))}
             </div>

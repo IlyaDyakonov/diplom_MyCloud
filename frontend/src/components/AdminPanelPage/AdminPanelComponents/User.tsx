@@ -6,23 +6,32 @@ import { UserTypeAdminPanel } from "../../../models";
 
 
 const User: React.FC<UserTypeAdminPanel> = ({
-    id, username, email, numOfFiles, size, isStaff, removeItem,
+    id, username, email, numOfFiles, size, isStaff, isSuperUser, removeItem,
 }) => {
     const prefix = import.meta.env.BUILD_PREFIX || '';
     const [ sendRequest, setSendRequest ] = useState<"DELETE" | "PATCH" | "">("");
-    const [_isStaff, _setIsStaff] = useState(isStaff);
+    const [_isStaff, _setIsStaff] = useState(isStaff || false);
+    const [_isSuperUser, _setIsSuperUser] = useState(isSuperUser || false);
 
     useEffect(() => {
         const fetchDataDelete = async () => {
-            const response = await deleteUser(id);
-
-            if (response.status === 200) {
-                removeItem(id);
+            if (!removeItem) return; // Проверяем, что removeItem определен
+            try {
+                const response = await deleteUser(id);
+                if (response && response.status === 200) {
+                    removeItem(id);
+                }
+            } catch (error) {
+                console.error("Ошибка удаления пользователя:", error);
             }
         };
 
         const fetchDataPatch = async () => {
-            await patchUser(id, _isStaff);
+            try {
+                await patchUser(id, _isStaff, _isSuperUser);
+            } catch (error) {
+                console.error("Ошибка обновления пользователя:", error);
+            }
         };
 
         if (sendRequest === 'DELETE') {
@@ -36,7 +45,7 @@ const User: React.FC<UserTypeAdminPanel> = ({
         }
     }, [sendRequest]);
 
-    const onClickHandler = (method) => {
+    const onClickHandler = (method: "DELETE" | "PATCH") => {
         setSendRequest(method);
     };
 
@@ -49,13 +58,24 @@ const User: React.FC<UserTypeAdminPanel> = ({
         <td>{ numOfFiles }</td>
         <td>{ size }</td>
         <td>
-            <IsStaffBtn isStaff={_isStaff} setIsStaff={_setIsStaff} onClickHandler={onClickHandler} />
+            <IsStaffBtn
+                isStaff={_isStaff}
+                setIsStaff={_setIsStaff}
+                isSuperUser={_isSuperUser}
+                setIsSuperUser={_setIsSuperUser}
+                onClickHandler={onClickHandler}
+            />
         </td>
         <td>
             <ToFolderBtn userId={id} />
         </td>
         <td>
-            <button onClick={() => onClickHandler('DELETE')} onKeyDown={() => onClickHandler('DELETE')} type="button" aria-label="Delete">
+            <button
+                onClick={() => onClickHandler('DELETE')}
+                onKeyDown={() => onClickHandler('DELETE')}
+                type="button"
+                aria-label="Delete"
+            >
                 <img src={`${prefix}del-icon.png`} alt="delete" />
             </button>
         </td>

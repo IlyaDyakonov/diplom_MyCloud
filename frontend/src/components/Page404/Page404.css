@@ -4,19 +4,19 @@
     align-items: center;
     justify-content: center;
     height: 60vh;
-    background-color: #f4f4f4;
+    /* background-color: #f4f4f4; */
     text-align: center;
 }
 
 .page404-title {
     font-size: 10rem;
     font-weight: bold;
-    color: #333;
+    color: #ffffff;
     margin-bottom: 1rem;
     margin-top: 1rem;
 }
 
 .page404-content {
-    font-size: 2rem;
-    color: #666;
+    font-size: 3rem;
+    color: #ffffff;
 }

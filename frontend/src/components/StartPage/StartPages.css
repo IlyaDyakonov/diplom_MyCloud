@@ -10,7 +10,7 @@
 /* Стили для приветственного сообщения */
 .menu-login-welcome {
     color: #fff; /* Цвет текста */
-    font-size: 2rem; /* Размер шрифта */
+    font-size: 3rem; /* Размер шрифта */
     margin-top: 10rem; /* Убираем отступы */
 }
 
@@ -26,7 +26,7 @@
 .crud-menu__item {
     color: #fff; /* Цвет текста ссылок */
     text-decoration: none; /* Убираем подчеркивание */
-    font-size: 1rem; /* Размер шрифта */
+    font-size: 1.5rem; /* Размер шрифта */
     padding: 5px 10px; /* Внутренние отступы */
     transition: background-color 0.3s, color 0.3s; /* Плавный переход цвета фона и текста */
     border-radius: 4px; /* Скругление углов */
@@ -44,6 +44,11 @@
     display: flex; /* Flexbox для вертикального расположения */
     flex-direction: column; /* Вертикальное направление */
     align-items: center; /* Центрирование по горизонтали */
-    gap: 10px; /* Пробел между элементами */
-    height: 50vh;
+    gap: 50px; /* Пробел между элементами */
+    height: 60vh;
+}
+
+h1 {
+    margin-top: 15vh;
+    font-size: 1.5rem;
 }

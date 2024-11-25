@@ -39,7 +39,6 @@ const File: React.FC<FileProps> = ({
 			})}};
 
     return (
-        // <div className={`file ${currentFile?.id === id ? 'selected' : ''}`}
 		<div className={`file ${currentFile?.id === id ? 'selected' : ''} ${isOtherUserFile ? 'file-other-user' : ''}`}
             onMouseOver={onMouseOverHandler}
 			onMouseLeave={onMouseLeaveHandler}

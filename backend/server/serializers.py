@@ -74,7 +74,7 @@ class FileSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Имя файла или сам файл должны быть указаны.")
 
             # Генерация пути для нового имени файла
-            final_file_name = name or attributes.get('file', None).name  # Исправлено: добавлено `None` при отсутствии `file`
+            final_file_name = name or attributes.get('file', None).name
             if file_exists:
                 if final_file_name:
                     path, file_name = File().created_path_and_file_name(user_id, final_file_name)

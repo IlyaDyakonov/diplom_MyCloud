@@ -149,11 +149,26 @@ export function deleteUser(id: number) {
     }
 }
 
-export async function patchUser(id: number, isStaff: boolean) {
+export async function patchUser(id: number, isStaff: boolean, isSuperuser: boolean) {
     try {
         const token = localStorage.getItem("token");
-        return await axios.patch(`${BASE_URL}/auth/users/${id}/`, {
+        console.log(`смотрим id ${id}`);
+        console.log(`смотрим isStaff ${isStaff}`);
+        console.log(`смотрим isSuperuser ${isSuperuser}`);
+        
+        if (isStaff !== isSuperuser) {
+            console.log(`ВЫЗВАЛСЯ ЭТОТ УЧАСТОК`);
+            console.log(`смотрим isStaff ${isStaff}`);
+            console.log(`смотрим isSuperuser ${isSuperuser}`);
+            isSuperuser = isStaff;
+            console.log(`_______________________________+++`);
+            console.log(`смотрим isStaff ${isStaff}`);
+            console.log(`смотрим isSuperuser ${isSuperuser}`);
+        }
+        console.log(`__________________________________`);
+        return await axios.patch(`${BASE_URL}/auth/${id}/`, {
             is_staff: isStaff,
+            is_superuser: isSuperuser,
         }, {
             headers: {
                 'Content-Type': 'application/json',

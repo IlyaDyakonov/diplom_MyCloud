@@ -19,7 +19,7 @@ export function StartPages() {
         <nav className="crud-menu">
             {activeState === 'auth' && loginUser ? (
                 <div className="auth-name">
-                    <h1>Добро пожаловать в наш сервис, уважаемый {loginUser.username}!</h1>
+                    <h1>Добро пожаловать в наш сервис, уважаемый "{loginUser.username}"!</h1>
                     <h1>Перейти в фаловое хранилище!<NavLink to="/folder" className={'crud-menu__item'}>Clik!</NavLink></h1>
                 </div>
             ) : (
@@ -35,23 +35,3 @@ export function StartPages() {
         </nav>
     )
 }
-
-
-    // const location = useLocation();
-    // const isActive = 'crud-menu__item';
-    // const isNoActive = 'crud-menu__item';
-    // /**
-    //  * Проверяет, является ли путь активным.
-    //  * @param {string} path Путь для проверки.
-    //  * @returns {boolean} Возвращает true, если путь активен.
-    //  */
-    // const isExactActive = (path: string) => location.pathname === path;
-    // // Определяем текущий путь
-    // const currentPath = location.pathname;
-
-    // // Проверка, если мы находимся на странице логина или регистрации
-    // const isLoginOrRegisterPage = currentPath === "/login" || currentPath === "/register";
-    // // Рендеринг навигационного меню только если не находимся на страницах логина или регистрации
-    // if (isLoginOrRegisterPage) {
-    //     return null; // Меню не будет отображаться
-    // }

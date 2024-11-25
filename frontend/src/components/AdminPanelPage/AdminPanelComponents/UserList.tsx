@@ -11,8 +11,7 @@ function UsersList() {
         const fetchData = async () => {
             const response = await getUserList();
             const data = response;
-            // console.log(`data: ${data}`)
-            // console.log(`data: ${JSON.stringify(data, null, 2)}`);
+
             if (response !== null) {
                 setRenderedData(data);
                 
@@ -51,7 +50,7 @@ function UsersList() {
                             username={user.username}
                             email={user.email}
                             numOfFiles={user.count}
-                            size={(user.size * 9.537 * 10 ** -7).toFixed(2)}
+                            size={Number((user.size * 9.537 * 10 ** -7).toFixed(2))}
                             isStaff={user.is_staff}
                             removeItem={removeItem}
                         />

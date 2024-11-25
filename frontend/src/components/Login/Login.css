@@ -57,6 +57,7 @@ form label input[type="checkbox"] {
 /* Стили для кнопки */
 .button-submit {
     padding: 10px; /* Внутренние отступы */
+    margin-left: 25%; /* внешний левый отступ */
     font-size: 1rem; /* Размер шрифта */
     background-color: #1da1f2; /* Цвет фона кнопки */
     color: #fff; /* Цвет текста кнопки */

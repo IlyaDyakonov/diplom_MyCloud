@@ -63,8 +63,7 @@ function FileEditPanel({ currentFile, setCurrentFile, setFiles }: FileEditPanelP
     
         setPatchForm(action);
     };
-    // console.log(`setPatchForm: ${currentFile}`);
-    // console.log(`patchForm: ${patchForm}`);
+
     return (
         <>
             <div className="file-edit-panel">

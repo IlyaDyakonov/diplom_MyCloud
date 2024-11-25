@@ -10,9 +10,8 @@ import axios from 'axios';
 const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFiles }) => {
     const prefix = import.meta.env.BUILD_PREFIX || '';
     const newComment = useRef<HTMLTextAreaElement>(null);
-    // const { currentStorageUser } = useContext(GlobalStateContext);
     const loginUser = useSelector((state: RootState) => state.users.loginUser);
-    const userId = loginUser ? loginUser.id : 0; // Если loginUser null, устанавливаем userId в 0
+    const userId = loginUser ? loginUser.id : 0;
     const [currentStorageUser, setCurrentStorageUser] = useState<number>(userId || 0); // Устанавливаем ID текущего пользователя
 
 
@@ -36,8 +35,8 @@ const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFile
             comment: newComment.current?.value || '',
             user_id: userId || currentStorageUser  // Используем userId или currentStorageUser, если userId пуст
         };
-        console.log(`patchData: ${JSON.stringify(patchData, null, 2)}`);
-        console.log(`currentFile: ${JSON.stringify(currentFile, null, 2)}`);
+        // console.log(`patchData: ${JSON.stringify(patchData, null, 2)}`);
+        // console.log(`currentFile: ${JSON.stringify(currentFile, null, 2)}`);
 
         try {
             let response;
@@ -59,10 +58,8 @@ const FileComment: React.FC<FileCommentProps> = ({ currentFile, setForm, setFile
             }
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
-                // Обработка ошибок Axios
                 console.error("Ошибка при выполнении patchFile:", error.response?.data || error.message);
             } else if (error instanceof Error) {
-                // Обработка стандартных ошибок JavaScript
                 console.error("Ошибка при выполнении patchFile:", error.message);
             } else {
                 // Неизвестный тип ошибки

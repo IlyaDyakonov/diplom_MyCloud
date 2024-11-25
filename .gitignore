@@ -1,6 +1,7 @@
 dist
 doc
 venv/
+uploads/
 
 # Logs
 logs

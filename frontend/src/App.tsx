@@ -10,9 +10,10 @@ function App() {
       <Router>
         <Header />
         <div className="body">
-          <Routes>
-            <Route path="/*" element={<CRUD />} />
-          </Routes>
+          <div className='backgraund-img'/>
+            <Routes>
+              <Route path="/*" element={<CRUD />} />
+            </Routes>
         </div>
         <Footer />
       </Router>

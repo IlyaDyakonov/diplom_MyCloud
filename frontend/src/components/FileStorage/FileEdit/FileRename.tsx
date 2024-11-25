@@ -32,16 +32,15 @@ const FileRename: React.FC<FileRenameProps> = ({ currentFile, setForm, setFiles 
         const patchData = {
             ...currentFile,
             file_name: newFileNameValue,
-            user_id: userId || currentStorageUser  // Используем userId или currentStorageUser, если userId пуст
+            user_id: userId || currentStorageUser
         };
         console.log(`1: ${currentFile.id}, 2: ${patchData.file_name}, 3: ${currentStorageUser}`);
-        // try {
+
         const response = await patchFile(patchData, currentStorageUser);
         const data = response.data;
-        // console.log(`qqqqqqqqqqqqqqq: ${JSON.stringify(data, null, 2)}`);
         window.location.reload();
         if (response.status === 200) {
-            setFiles(data);  // Обновляем список файлов с новым именем
+            setFiles(data);
             setForm();
         }
     };

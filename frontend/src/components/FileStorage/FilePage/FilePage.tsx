@@ -44,9 +44,7 @@ function FilePage() {
                 console.log(`2222222222222222222222: ${userI}`);
                 response = await getUserFiles(userId);
             }
-            //   const data = response.data;
-            //   setFiles(data);
-            // const response = await getAllFiles();
+
             const data = response.data;
             setFiles(data);
         }
@@ -68,12 +66,10 @@ function FilePage() {
         console.log(`formData1: ${formData.get('size')}`);
         console.log(`formData2: ${formData.get('path')}`);
         console.log(`formData3: ${formData.get('user_id')}`);
-        // console.log(formData);
-        // formData.append('comment', '');
+
         try {
             const response = await createFile(formData);
             console.log(`formData: ${formData}`);
-            // const data = await response.data;
             setFiles(response.data);
             window.location.reload();
         } catch (error) {
@@ -98,14 +94,13 @@ function FilePage() {
                             setCurrentFile={setCurrentFile}
                         />
                     )}
-                {/* { loginUser?.is_staff && loginUser?.is_superuser ? ( */}
                 {loginUser?.is_superuser ? (
-                    <p className="thanks">
+                    <p className="login-admin">
                         <NavLink to="/admin" className={'crud-menu__item'}>Войти</NavLink>
                         в админ панель!
                     </p>
                 ) : (
-                    <div className='thanks'>Спасибо что пользуетесь нашим сервисом! 💻</div>
+                    <div className='login-admin'>Спасибо что пользуетесь нашим сервисом! 💻</div>
                 )
                 }
                 <FileAdd sendFile={sendFile} />

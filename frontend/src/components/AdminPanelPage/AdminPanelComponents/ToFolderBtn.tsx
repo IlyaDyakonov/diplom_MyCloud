@@ -7,7 +7,6 @@ const ToFolderBtn: React.FC<ToFolderBtnProps> = ({ userId }) => {
 
     const onClickHandler = () => {
         window.sharedUserId = userId;
-        console.log(`ToFolderBtn: ${userId}`)
     };
 
     return (

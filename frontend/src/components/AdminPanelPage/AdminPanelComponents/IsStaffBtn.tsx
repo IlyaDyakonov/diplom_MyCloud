@@ -3,11 +3,17 @@ import '../AdminPanel.css';
 import { IsStaffBtnProps } from '../../../models';
 
 
-const IsStaffBtn: React.FC<IsStaffBtnProps> = ({ isStaff, onClickHandler, setIsStaff }) => {
+const IsStaffBtn: React.FC<IsStaffBtnProps> = ({ isStaff, isSuperUser, onClickHandler, setIsStaff, setIsSuperUser }) => {
     const isStaffHandler = () => {
-        setIsStaff(!isStaff);
+        const newIsStaff = !isStaff;
+        const newIsSuperUser = !isSuperUser;
+        
+        setIsStaff(newIsStaff);
+        setIsSuperUser(newIsSuperUser);
+
         onClickHandler('PATCH');
     };
+
 
     return (
         <div

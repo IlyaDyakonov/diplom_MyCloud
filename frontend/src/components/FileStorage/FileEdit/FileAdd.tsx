@@ -20,14 +20,14 @@ function FileAdd({ sendFile }: FileAddProps) {
 
     // Обработчик выбора файла
     const onChangeHandler = () => {
-        if (file.current) { // Проверка, что file.current существует
-            setFileChosen(file.current.files); // Устанавливаем выбранный файл в состояние
+        if (file.current) {
+            setFileChosen(file.current.files);
         }
     };
 
     // Обработчик отправки формы
     const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); // Предотвращаем перезагрузку страницы при отправке формы
+        e.preventDefault();
 
         // Проверка, что файл выбран
         if (fileChosen && fileChosen.length > 0) {
@@ -56,8 +56,8 @@ function FileAdd({ sendFile }: FileAddProps) {
                         <input
                             type="file"
                             id="input_file"
-                            ref={file} // Привязываем ref к input
-                            onChange={onChangeHandler} // Обработчик изменения выбора файлов
+                            ref={file}
+                            onChange={onChangeHandler}
                         />
                     </label>
                     {/* Отображаем превью выбранного файла, если он выбран */}
