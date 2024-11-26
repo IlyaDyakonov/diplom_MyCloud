@@ -1,7 +1,7 @@
 /* Стили для контейнера логина */
 .container-login {
     max-width: 400px; /* Ограничение ширины */
-    margin: 40px auto; /* Центрирование контейнера */
+    margin: auto; /* Центрирование контейнера */
     padding: 20px; /* Внутренние отступы */
     background-color: #f9f9f9; /* Светлый фон */
     border: 1px solid #ddd; /* Граница */

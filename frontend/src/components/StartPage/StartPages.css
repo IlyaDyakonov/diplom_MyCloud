@@ -4,7 +4,7 @@
     flex-direction: column; /* Вертикальное направление */
     align-items: center; /* Центрирование по горизонтали */
     gap: 10px; /* Пробел между элементами */
-    height: 50vh;
+    height: 75vh;
 }
 
 /* Стили для приветственного сообщения */
@@ -30,7 +30,7 @@
     padding: 5px 10px; /* Внутренние отступы */
     transition: background-color 0.3s, color 0.3s; /* Плавный переход цвета фона и текста */
     border-radius: 4px; /* Скругление углов */
-    background-color: #007cc9; /* Цвет фона для активной ссылки */
+    background-color: #009dff; /* Цвет фона для активной ссылки */
     color: #fff; /* Цвет текста для активной ссылки */
 }
 
@@ -45,10 +45,10 @@
     flex-direction: column; /* Вертикальное направление */
     align-items: center; /* Центрирование по горизонтали */
     gap: 50px; /* Пробел между элементами */
-    height: 60vh;
+    height: 75vh;
 }
 
 h1 {
     margin-top: 15vh;
-    font-size: 1.5rem;
+    font-size: 2rem;
 }
