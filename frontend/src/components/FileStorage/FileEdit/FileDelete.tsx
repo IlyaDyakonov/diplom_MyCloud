@@ -15,7 +15,7 @@ const  FileDelete: React.FC<FileDeleteProps> = ({
             return;
         }
 
-        let response = await deleteFile(currentFile.id);
+        const response = await deleteFile(currentFile.id);
 
         const data = response.data;
 

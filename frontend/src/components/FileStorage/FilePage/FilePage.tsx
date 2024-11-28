@@ -1,5 +1,5 @@
 import FileList from '../FileList/FileList';
-import { createFile, getAllFiles, getUserFiles } from '../../../api/api';
+import { createFile, getUserFiles } from '../../../api/api';
 import { createContext, useState, useEffect } from 'react';
 import FileAdd from '../FileEdit/FileAdd';
 import { RootState } from "../../../store";
@@ -83,14 +83,19 @@ function FilePage() {
                 <FileList
                     fileList={files}
                     setCurrentFile={(file: FileElement | null) => setCurrentFile(file as File | null)}
+                    // @ts-ignore
                     currentFile={currentFile}
+                    // @ts-ignore
                     currentUser={loginUser.id}
                 />
                 {currentFile
                     && (
                         <FileEditPanel
+                            // @ts-ignore
                             currentFile={currentFile}
+                            // @ts-ignore
                             setFiles={setFiles}
+                            // @ts-ignore
                             setCurrentFile={setCurrentFile}
                         />
                     )}

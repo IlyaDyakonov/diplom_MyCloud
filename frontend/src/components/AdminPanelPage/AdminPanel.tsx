@@ -1,4 +1,3 @@
-import React from 'react';
 import './AdminPanel.css';
 import UsersList from './AdminPanelComponents/UserList';
 import { useFetchCheckUserStatus } from '../../slices/useFetchCheckUserStatus';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 // import PropTypes from 'prop-types';
 import FileRename from './FileRename';
 import FileDelete from './FileDelete';

@@ -68,7 +68,7 @@ export interface FileElement {
 }
 
 export interface FileProps extends FileElement {
-    currentFile: FileElement;
+    currentFile: FileElement | null;
     setCurrentFile: (file: FileElement | null) => void;
     isOtherUserFile?: boolean;
 }

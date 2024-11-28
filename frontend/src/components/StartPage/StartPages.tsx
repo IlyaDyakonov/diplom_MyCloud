@@ -25,7 +25,7 @@ export function StartPages() {
             ) : (
                 <div className="menu-login">
                     <h2 className="menu-login-welcome">Добро пожаловать на наш сервис облачного хранения данных!</h2>
-                    <p className="menu-login-log-reg">Перед началом работы,
+                    <p className="menu-login-log-reg">Перед началом работы
                         <NavLink to="/login" className={'crud-menu__item'}>войдите</NavLink>
                         или
                         <NavLink to="/register" className={'crud-menu__item'}>зарегистрируйтесь</NavLink>
