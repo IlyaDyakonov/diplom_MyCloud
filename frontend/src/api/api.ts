@@ -2,7 +2,8 @@ import axios, { AxiosError } from 'axios';
 // import Cookies from 'js-cookie';
 
 
-export const BASE_URL = 'http://localhost:8000/api';
+// export const BASE_URL = 'http://localhost:8000/api';
+export const BASE_URL = 'http://89.111.154.234:80/api';
 
 const getCookie = (name: string): string | null => {
     let cookieValue = null;

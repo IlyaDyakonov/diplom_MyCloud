@@ -83,7 +83,7 @@ python manage.py loaddata loaddata.json
 sudo nano /etc/systemd/system/gunicorn.service
 ```
 
-- Впишите следующий код, где смените `ilia` на вашего пользователя:
+- Впишите следующий код, где смените `ubuntu` на вашего пользователя:
 
 ```bash
 [Unit]
@@ -91,8 +91,8 @@ Description=gunicorn daemon
 After=network.target
 
 [Service]
-User=ilia
-WorkingDirectory=/home/ilia/diplom_MyCloud/backend
+User=ubuntu
+WorkingDirectory=/home/ubuntu/diplom_MyCloud/backend
 ExecStart=/home/ubuntu/diplom_MyCloud/backend/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/ubuntu/diplom_MyCloud/backend/gunicorn.sock mycloud.wsgi:application
 
 [Install]
@@ -123,10 +123,10 @@ sudo nano /etc/nginx/sites-available/mycloud
 server {
     listen 80;
     server_name 194.67.88.152;
-    root /home/ilia/diplom_MyCloud/frontend/dist;
+    root /home/ubuntu/diplom_MyCloud/frontend/dist;
 
     location /media/ {
-        alias /home/ilia/diplom_MyCloud/backend/mycloud/media/;
+        alias /home/ubuntu/diplom_MyCloud/backend/mycloud/media/;
         default_type "image/jpg";
     }
     location / {
@@ -134,11 +134,11 @@ server {
     }
     location /api/ {
         include proxy_params;
-        proxy_pass http://unix:/home/ilia/diplom_MyCloud/backend/mycloud/project.sock;
+        proxy_pass http://unix:/home/ubuntu/diplom_MyCloud/backend/mycloud/project.sock;
     }
     location /a/ {
         include proxy_params;
-        proxy_pass http://unix:/home/ilia/diplom_MyCloud/backend/mycloud/project.sock;
+        proxy_pass http://unix:/home/ubuntu/diplom_MyCloud/backend/mycloud/project.sock;
     }
 }
 ```
@@ -151,7 +151,7 @@ sudo nano /etc/nginx/nginx.config
 Впишите следующий код, сменив имя пользователя:
 
 ```bash
-user ilia;
+user ubuntu;
 worker_processes auto;
 pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;
