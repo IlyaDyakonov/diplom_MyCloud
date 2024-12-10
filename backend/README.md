@@ -87,15 +87,13 @@ sudo nano /etc/systemd/system/gunicorn.service
 
 ```bash
 [Unit]
-Description=gunicorn
+Description=gunicorn daemon
 After=network.target
 
 [Service]
 User=ilia
 WorkingDirectory=/home/ilia/diplom_MyCloud/backend
-ExecStart=/home/ilia/diplom_MyCloud/backend/venv/bin/gunicorn --access-logfile -\
-    --workers=3 \
-    --bind unix:/home/ilia/diplom_MyCloud/backend/mycloud/project.sock backend.wsgi:application
+ExecStart=/home/ubuntu/diplom_MyCloud/backend/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/home/ubuntu/diplom_MyCloud/backend/gunicorn.sock mycloud.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
@@ -125,7 +123,7 @@ sudo nano /etc/nginx/sites-available/mycloud
 server {
     listen 80;
     server_name 194.67.88.152;
-    root /home/ilia/diplom_MyCloud/frontend/build;
+    root /home/ilia/diplom_MyCloud/frontend/dist;
 
     location /media/ {
         alias /home/ilia/diplom_MyCloud/backend/mycloud/media/;
@@ -142,6 +140,44 @@ server {
         include proxy_params;
         proxy_pass http://unix:/home/ilia/diplom_MyCloud/backend/mycloud/project.sock;
     }
+}
+```
+Так же поменяем конфиг:
+
+```bash
+sudo nano /etc/nginx/nginx.config
+```
+
+Впишите следующий код, сменив имя пользователя:
+
+```bash
+user ilia;
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+    worker_connections 768;
+}
+
+http {
+    sendfile on;
+    tcp_nopush on;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    gzip on;
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
 }
 ```
 
