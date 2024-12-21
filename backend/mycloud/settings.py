@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    'rest_framework.authtoken',
+    "rest_framework.authtoken",
     "corsheaders",
     "server",
 ]
@@ -92,13 +91,13 @@ WSGI_APPLICATION = "mycloud.wsgi.application"
 
 DATABASES = {
     "default": {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'diplom',
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "diplom_new",
         # 'NAME': 'diplom_serv',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-        'USER': 'postgres',
-        'PASSWORD': '13245342',
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
+        "USER": "postgres",
+        "PASSWORD": "13245342",
     }
 }
 
@@ -159,20 +158,20 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
     ),
-	'DEFAULT_RENDERER_CLASSES': [
-		'rest_framework.renderers.JSONRenderer',
-	],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
 }
 
-AUTH_USER_MODEL = 'server.User'
+AUTH_USER_MODEL = "server.User"
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # Стандартный бэкенд
+    "django.contrib.auth.backends.ModelBackend",  # Стандартный бэкенд
 ]
 
 STATIC_URL = "/static/"
-MEDIA_ROOT = BASE_DIR / 'uploads'
-MEDIA_URL = '/uploads/'
+MEDIA_ROOT = BASE_DIR / "uploads"
+MEDIA_URL = "/uploads/"
